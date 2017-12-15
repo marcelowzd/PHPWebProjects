@@ -1,0 +1,34 @@
+.rating {
+    unicode-bidi: bidi-override;
+  }
+  .rating i {
+    font-size: 26px;
+  }
+  .rating > span {
+    display: inline-block;
+    position: relative;
+    width: 1.1em;
+  }
+  .rating > span:hover:before,
+  .rating > span:hover ~ span:before {
+     content: "\2605";
+     position: absolute;
+  }
+
+/* ============================================ */
+.estrelas input[type=radio] {
+  display: none;
+}
+.estrelas label i.fa:before {
+  content: '\f005';
+  font-size: 22px;
+  cursor: pointer;
+  color: #FC0;
+}
+
+.estrelas input[type=radio]:checked ~ label i.fa:before {
+  color: #bbb;
+}
+.classificacao i {
+  color: #FC0;
+}
