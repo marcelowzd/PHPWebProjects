@@ -1,0 +1,73 @@
+.pedido-container {
+    background-color: rgb(255, 255, 255);
+    padding: 15px;
+    border-radius: 10px;
+    color: rgb(20, 20, 20);
+}
+
+.lista-pedidos li{
+    list-style: none;
+}
+
+.item-pedido {
+    text-decoration: none;
+    color: rgb(80, 80, 90);
+    font-size: 16px;
+    display: block;
+    height: 100px;
+    border: 1px solid rgba(80, 80, 90, 0.1);
+    min-height: 70px
+}
+.item-pedido:hover {
+    color: rgb(80, 80, 90);
+    text-decoration: underline;
+}
+.item-pedido .pedido-owner{
+    background: radial-gradient(ellipse at center,#5e8 0%,#5e8 0%,#5e8 67%,rgba(0,0,0,0) 70%);
+}
+.item-pedido .titulo-pedido, .item-pedido .distancia{
+    font-weight: 600;
+}
+
+.iniciado{
+    color: red;
+    font-weight: 700;
+}
+.confirmaçao{
+    color: rgb(250,120,50);
+    font-weight: 700;
+}
+.aceito {
+    color: rgb(50, 210, 10);
+    font-weight: 700;
+}
+.pedido-owner {
+
+}
+.icon {
+    display: inline-block;
+    width: 20px;
+    height: 18px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.titulo {
+    font-size: 26px;
+    font-weight: 600;
+}
+.titulo h3 {
+    font-size: 22px !important;
+}
+.orçamento_info {
+    margin: auto;
+    text-align: center;
+}
+.proposta_valor {
+    font-size: 28px;
+}
+.entregador_proposta img {
+    height: 96px;
+}
+.classificacao {
+    color: orange;
+}
