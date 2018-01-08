@@ -70,9 +70,26 @@
             return $return;
         }
         
-        public function UpdateRequisitante( $params = array() ) 
+        public function UpdateRequisitante( $codigo, $parameters )
         {
+            if( $this->conn )
+            {
+                $sql = "UPDATE Requisitante SET ";
 
+                foreach( $parameters as $key => $value )
+                    $sql .= $key." = '".$value."',";
+
+                $sql = substr( $sql, 0, strlen( $sql ) - 1 );
+
+                $sql .= " WHERE CD_Requisitante = ".$codigo;
+
+                if( mysqli_query( $this->conn, $sql ) )
+                    return 1;
+                else
+                    echo mysqli_error( $this->conn );
+            }
+            else
+                return 0;
         }
 
         public function DeleteRequisitante( $index )

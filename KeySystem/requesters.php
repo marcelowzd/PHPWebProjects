@@ -22,6 +22,36 @@
             require 'Requisitante.php';
     
             $requisitante = new Requisitante();
+
+            if( array_key_exists( "Edit", $_POST ) ) // Edit button pressed
+            {
+                $idRequisitante = $_POST['CD_Requisitante'];
+                $nmRequisitante = $_POST['NM_Requisitante'];
+                $dsRequisitante = $_POST['DS_Requisitante'];
+
+                if( is_numeric( $idRequisitante ) && intval( $idRequisitante ) > 0 )
+                {
+                    if( !is_null( $nmRequisitante ) && strlen( $nmRequisitante ) > 0 )
+                    {
+                        if( !is_null( $dsRequisitante ) && strlen( $dsRequisitante ) > 0 )
+                        {
+                            $varToSend = array( );
+
+                            $originValues = $requisitante->ReadRequisitante( $idRequisitante, null, null );
+
+                            if( $originValues[0]['NM_Requisitante'] != $nmRequisitante )
+                                $varToSend['NM_Requisitante'] = $nmRequisitante;
+
+                            if( $originValues[0]['DS_Requisitante'] != $dsRequisitante )
+                                $varToSend['DS_Requisitante'] = $dsRequisitante;
+
+                            if( sizeof( $varToSend ) > 0 )
+                                if( $requisitante->UpdateRequisitante( $idRequisitante, $varToSend ) )
+                                    echo "<script> alert('Atualizado com sucesso'); </script>";
+                        }
+                    }
+                }
+            }
         ?>
         <div class="wrapper">
             <nav id="sidebar">
@@ -54,7 +84,7 @@
                         <a href="#"><i class="fa fa-id-card-o fa-1x" aria-hidden="true"></i>  Requisitantes</a>
                     </li>
                     <li>
-                        <a href="#"><i class="fa fa-microphone fa-1x" aria-hidden="true"></i>  Equipamentos</a>
+                        <a href="equipments.php"><i class="fa fa-microphone fa-1x" aria-hidden="true"></i>  Equipamentos</a>
                     </li>
                 </ul>
                 <!--<ul class="list-unstyled CTAs">
@@ -104,16 +134,38 @@
                             {
                                 $table .= "<tr>";
                                 $table .= "<td>".$value['CD_Requisitante']."</td>";
-                                $table .= "<td>".$value['NM_Requisitante']."</td>";
-                                $table .= "<td>".$value['DS_Requisitante']."</td>";
+                                $table .= "<td>".utf8_decode($value['NM_Requisitante'])."</td>";
+                                $table .= "<td>".utf8_decode($value['DS_Requisitante'])."</td>";
                                 $table .= "<td><button type='button' onClick='EditModalChange(".$value['CD_Requisitante'].")' data-toggle='modal' data-target='#editModal' class='btn btn-success btn-sm'><span class='fa fa-edit'></span></button></td>";
-                                $table .= "<td><button type='button' onClick='DeleteRoomRequest(".$value['CD_Requisitante'].")' class='btn btn-danger btn-sm'><span class='fa fa-trash-o'></span></button></td>";
+                                $table .= "<td><button type='button' onClick='DeleteRequester(".$value['CD_Requisitante'].")' class='btn btn-danger btn-sm'><span class='fa fa-trash-o'></span></button></td>";
                                 $table .= "</tr>";
                             }
             
                             echo $table;
                         ?>
                         </tbody>
+                    <div class="modal fade" id="editModal" role="dialog" aria-labelledby="exampleModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4> Editar requisitante </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="" method="POST" id="formEdit">
+                                        <input type="hidden" value="" name="CD_Requisitante" id="CD_Requisitante">
+                                        <label class="" for="NM_Requisitante"> Nome </label>
+                                        <input type="text" value="" placeholder="" name="NM_Requisitante" id="NM_Requisitante"><br>
+                                        <label class="" for="DS_Requisitante"> Descrição </label>
+                                        <input type="text" value="" placeholder="" name="DS_Requisitante" id="DS_Requisitante">
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                    <button type="submit" form="formEdit" class="btn btn-success" name="Edit">Salvar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 <?php } else { // Fim do IF IsArray() ?>
                     <div class="jumbotron">
                         <h1 class="display-3">Sistema de chaves</h1>
@@ -144,6 +196,69 @@
                     $('a[aria-expanded=true]').attr('aria-expanded', 'false');
                 });
             });
+        </script>
+        <script>
+            function EditModalChange( index )
+            {
+                var xhttp = generateXMLHttp();
+
+                xhttp.open("GET", "Ajax.php?CD_Requisitante_Edit=" + index, true);
+                xhttp.onreadystatechange = function()
+                {
+                    if (xhttp.readyState == 4)
+                    {
+                        if (xhttp.status == 200)
+                        {
+                            var response = JSON.parse(xhttp.responseText);
+
+                            var idRequisitante = document.getElementById('CD_Requisitante');
+                            var nmRequisitante = document.getElementById('NM_Requisitante');
+                            var dsRequisitante = document.getElementById('DS_Requisitante');
+
+                            idRequisitante.value = index;
+                            nmRequisitante.value = response[0]['NM_Requisitante'];
+                            dsRequisitante.value = response[0]['DS_Requisitante'];
+                        }
+                    }			
+                };
+                xhttp.send();
+            }
+            function DeleteRequester( index )
+            {
+                var xhttp = generateXMLHttp();
+
+                xhttp.open("GET", "Ajax.php?CD_Requisitante_Del=" + index, true);
+                xhttp.onreadystatechange = function()
+                {
+                    if (xhttp.readyState == 4)
+                        if (xhttp.status == 200)
+                            location.reload(true);
+                };
+                xhttp.send();
+            }
+            function generateXMLHttp() 
+            {
+                if (typeof XMLHttpRequest != "undefined"){
+                    return new XMLHttpRequest();
+                }
+                else
+                {	
+                    if (window.ActiveXObject)
+                    {
+                        var versions = ["MSXML2.XMLHttp.5.0", 
+                                        "MSXML2.XMLHttp.4.0", 
+                                        "MSXML2.XMLHttp.3.0",
+                                        "MSXML2.XMLHttp", 
+                                        "Microsoft.XMLHttp" ];
+                    }
+                }
+                for ( var i = 0; i < versions.length; i++ )
+                {
+                    try{ return new ActiveXObject(versions[i]) }
+                    catch(e){}
+                }
+                alert('Seu navegador não pode trabalhar com Ajax!');
+            }
         </script>
     </body>
 </html>

@@ -91,7 +91,7 @@
                         <a href="requesters.php"><i class="fa fa-id-card-o fa-1x" aria-hidden="true"></i>  Requisitantes</a>
                     </li>
                     <li>
-                        <a href="#"><i class="fa fa-microphone fa-1x" aria-hidden="true"></i>  Equipamentos</a>
+                        <a href="equipments.php"><i class="fa fa-microphone fa-1x" aria-hidden="true"></i>  Equipamentos</a>
                     </li>
                 </ul>
                 <!--<ul class="list-unstyled CTAs">
@@ -141,8 +141,8 @@
                             foreach( $requisicoesSala as $key => $value )
                             {
                                 $table .= "<tr>";
-                                $table .= "<td>".$value['NM_Requisitante']."</td>";
-                                $table .= "<td>".$value['NM_Chave']."</td>";
+                                $table .= "<td>".utf8_decode($value['NM_Requisitante'])."</td>";
+                                $table .= "<td>".utf8_decode($value['NM_Chave'])."</td>";
                                 $table .= "<td>".$value['DT_Completa']."</td>";
                                 $table .= "<td>".$value['DT_Horario']."</td>";
                                 $table .= "<td><button type='button' onClick='EditModalChange(".$value['CD_Requisicao_Sala'].")' data-toggle='modal' data-target='#editModal' class='btn btn-success btn-sm'><span class='fa fa-edit'></span></button></td>";
