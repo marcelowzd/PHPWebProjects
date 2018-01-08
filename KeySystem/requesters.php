@@ -34,7 +34,7 @@
                         <a href="#"><i class="fa fa-home fa-1x"></i>  Home</a>
                     </li>
                     <li>
-                        <a href="#homeSubmenu"><i class="fa fa-key fa-1x" aria-hidden="true"></i>  Requisicoes de sala</a> <!-- Tava nesse <a> -> data-toggle="collapse" aria-expanded="false" -->
+                        <a href="room-requests.php"><i class="fa fa-key fa-1x" aria-hidden="true"></i>  Requisicoes de sala</a> <!-- Tava nesse <a> -> data-toggle="collapse" aria-expanded="false" -->
                         <!--<ul class="collapse list-unstyled" id="homeSubmenu">
                             <li><a href="#">Home 1</a></li>
                             <li><a href="#">Home 2</a></li>
