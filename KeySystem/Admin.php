@@ -5,7 +5,7 @@
 
     if( $conn )
     {
-        $sqlc = "CREATE DATABASE IF NOT EXISTS DtbsChave";
+        $sql = "CREATE DATABASE IF NOT EXISTS DtbsChave";
 
         if( mysqli_query( $conn, $sql ) ) echo "<p> Database DtbsChave criado com sucesso </p>";
         else echo "<p>".mysqli_error( $conn )."</p>";

@@ -23,8 +23,8 @@
 
         public function ReadRequisicaoSala( $id = null, $idRequester = null, $idKey = null)
         {
-            $sql = "SELECT RS.CD_Requisicao_Sala, C.NM_Chave, 
-            R.NM_Requisitante, RS.DT_Completa, RS.DT_Horario
+            $sql = "SELECT RS.CD_Requisicao_Sala, C.NM_Chave, R.CD_Requisitante, 
+            R.NM_Requisitante, RS.DT_Completa, RS.DT_Horario, C.CD_Chave
             FROM RequisicaoSala RS 
             JOIN Chave C ON( RS.CD_Chave = C.CD_Chave )
             JOIN Requisitante R ON( R.CD_Requisitante = RS.CD_Requisitante ) ";
@@ -42,8 +42,13 @@
             
             $stmt->execute();
             $stmt->store_result();
-            $stmt->bind_result($idRequisicaoSala, $nmchave, $nmrequisitante, $dtcompleta, $dthorario );
-
+            $stmt->bind_result
+                            (
+                                $idRequisicaoSala, $nmchave, 
+                                $idrequisitante, $nmrequisitante, 
+                                $dtcompleta, $dthorario, $idchave 
+                            );
+            
             $return = null;
 
             if($stmt->num_rows() > 0)
@@ -57,7 +62,9 @@
                     (
                         'CD_Requisicao_Sala' => $idRequisicaoSala,
                         'NM_Chave' => $nmchave,
+                        'CD_Chave' => $idchave,
                         'NM_Requisitante' => $nmrequisitante,
+                        'CD_Requisitante' => $idrequisitante,
                         'DT_Completa' => $dtcompleta,
                         'DT_Horario' => $dthorario
                     );
@@ -75,10 +82,10 @@
         {
             if( $this->conn )
             {
-                $sqlc = "UPDATE RequisicaoSala SET ";
+                $sql = "UPDATE RequisicaoSala SET ";
 
                 foreach( $parameters as $key => $value )
-                    $sql .= $key." = '".$value."', ";
+                    $sql .= $key." = '".$value."',";
 
                 $sql = substr( $sql, 0, strlen( $sql ) - 1 );
 
