@@ -76,6 +76,20 @@
         if( mysqli_query( $conn, $sql ) ) echo "<p> Tabela RequisicaoSala criada com sucesso </p>";
         else echo "<p>".mysqli_error( $conn )."</p>";
 
+        $sql = "CREATE TABLE IF NOT EXISTS RequisicaoEquipamento
+                (
+                    CD_Requisicao_Equipamento INTEGER PRIMARY KEY AUTO_INCREMENT,
+                    CD_Equipamento INTEGER NOT NULL UNIQUE,
+                    CD_Requisitante INTEGER NOT NULL,
+                    DT_Completa DATE NOT NULL,
+                    DT_Horario TIME NOT NULL,
+                    FOREIGN KEY (CD_Equipamento) REFERENCES Equipamento(CD_Equipamento),
+                    FOREIGN KEY (CD_Requisitante) REFERENCES Requisitante(CD_Requisitante)
+                )";
+        
+        if( mysqli_query( $conn, $sql ) ) echo "<p> Tabela RequisicaoEquipamento criada com sucesso </p>";
+        else echo "<p>".mysqli_error( $conn )."</p>";
+
     }
     else echo mysqli_error( $conn );
 ?>
