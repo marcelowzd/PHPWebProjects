@@ -22,6 +22,43 @@
             require 'Equipamento.php';
     
             $equipamento = new Equipamento();
+
+            if( array_key_exists( "Edit", $_POST ) )
+            {
+                $idEquipamento = $_POST['CD_Equipamento'];
+                $nmEquipamento = $_POST['NM_Equipamento'];
+
+                if( is_numeric( $idEquipamento ) && intval( $idEquipamento ) > 0 )
+                {
+                    if( !is_null( $nmEquipamento ) && strlen( $nmEquipamento ) > 0 )
+                    {
+                        $varToSend = array( );
+
+                        $originValues = $equipamento->ReadEquipamento( $idEquipamento, null );
+
+                        if( $originValues[0]['NM_Equipamento'] != $nmEquipamento )
+                            $varToSend['NM_Equipamento'] = $nmEquipamento;
+
+                        if( sizeof( $varToSend ) > 0 )
+                            if( $equipamento->UpdateEquipamento( $idEquipamento, $varToSend ) )
+                                echo "<script> alert('Atualizado com sucesso'); </script>";
+                    }
+                }
+            }
+            else if( array_key_exists( "Save", $_POST ) )
+            {
+                $nome = $_POST['NM_Equipamento_Add'];
+
+                if( !is_null( $nome ) && strlen( $nome ) > 3 && !is_numeric( $nome ) )
+                {
+                    if( $equipamento->CreateEquipamento( $nome ) )
+                        echo "<script> alert('Cadastrado com sucesso'); </script>";
+                    else
+                        echo "<script> alert('Não foi possível cadastrar'); </script>";
+                }
+                else
+                    echo "<script> alert('Não foi possível cadastrar'); </script>";
+            }
         ?>
         <div class="wrapper">
             <nav id="sidebar">
@@ -111,7 +148,16 @@
             
                             echo $table;
                         ?>
-                        </tbody>
+                            </tbody>
+                        </table>
+                        <footer>
+                            <div class="col-md-12 text-right">
+                                <button type="button" id="button-glyphicon" class="btn btn-circle btn-xl" data-toggle="modal" data-target="#novoEquipamento"><i class="glyphicon glyphicon-plus"></i></button><!-- Em class: novoEquipamento -->
+                            </div>
+                            <div class="container">
+						        <p class="copyright">&copy; 2018. Desenvolvido por <a href="https://github.com/marcelowzd">Marcelo Henrique</a></p>
+					        </div>
+                        </footer>
                     <div class="modal fade" id="editModal" role="dialog" aria-labelledby="exampleModalLabel">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
@@ -128,6 +174,31 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
                                     <button type="submit" form="formEdit" class="btn btn-success" name="Edit">Salvar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="novoEquipamento" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Novo equipamento</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <form role="form" id="validator" method="POST" action="#">
+                                                <div class="form-group has-feedback">
+                                                    <label for="NM_Equipamento_Add"><strong>Nome</strong></label>
+                                                    <input type="text" name="NM_Equipamento_Add" id="NM_Equipamento_Add" class="form-control"  placeholder="Digite o nome do equipamento" required />
+                                                </div>
+                                                <div class="form-group text-center">
+                                                    <button class="btn btn-success" type="submit" title="Salvar" name="Save">Salvar</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

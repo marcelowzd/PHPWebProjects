@@ -52,6 +52,26 @@
                     }
                 }
             }
+            else if( array_key_exists( "Save", $_POST ) )
+            {
+                $nome = $_POST['NM_Requisitante_Add'];
+                $desc = $_POST['DS_Requisitante_Add'];
+
+                if( !is_null( $nome ) && strlen( $nome ) > 2 && !is_numeric( $nome ) )
+                {
+                    if( !is_null( $desc ) && strlen( $desc ) > 3 && !is_numeric( $desc ) )
+                    {
+                        if( $requisitante->CreateRequisitante( $nome, $desc ) )
+                            echo "<script> alert('Cadastrado com sucesso'); </script>";
+                        else
+                            echo "<script> alert('Não foi possível cadastrar'); </script>";
+                    }
+                    else
+                        echo "<script> alert('Não foi possível cadastrar'); </script>";
+                }
+                else
+                    echo "<script> alert('Não foi possível cadastrar'); </script>";
+            }
         ?>
         <div class="wrapper">
             <nav id="sidebar">
@@ -128,22 +148,31 @@
                             </thead>
                             <tbody>
                             <?php        
-                            $table = ""; // Variável que exibirá a tabela
-            
-                            foreach( $requisitantes as $key => $value )
-                            {
-                                $table .= "<tr>";
-                                $table .= "<td>".$value['CD_Requisitante']."</td>";
-                                $table .= "<td>".utf8_decode($value['NM_Requisitante'])."</td>";
-                                $table .= "<td>".utf8_decode($value['DS_Requisitante'])."</td>";
-                                $table .= "<td><button type='button' onClick='EditModalChange(".$value['CD_Requisitante'].")' data-toggle='modal' data-target='#editModal' class='btn btn-success btn-sm'><span class='fa fa-edit'></span></button></td>";
-                                $table .= "<td><button type='button' onClick='DeleteRequester(".$value['CD_Requisitante'].")' class='btn btn-danger btn-sm'><span class='fa fa-trash-o'></span></button></td>";
-                                $table .= "</tr>";
-                            }
-            
-                            echo $table;
-                        ?>
-                        </tbody>
+                                $table = ""; // Variável que exibirá a tabela
+                
+                                foreach( $requisitantes as $key => $value )
+                                {
+                                    $table .= "<tr>";
+                                    $table .= "<td>".$value['CD_Requisitante']."</td>";
+                                    $table .= "<td>".utf8_decode($value['NM_Requisitante'])."</td>";
+                                    $table .= "<td>".utf8_decode($value['DS_Requisitante'])."</td>";
+                                    $table .= "<td><button type='button' onClick='EditModalChange(".$value['CD_Requisitante'].")' data-toggle='modal' data-target='#editModal' class='btn btn-success btn-sm'><span class='fa fa-edit'></span></button></td>";
+                                    $table .= "<td><button type='button' onClick='DeleteRequester(".$value['CD_Requisitante'].")' class='btn btn-danger btn-sm'><span class='fa fa-trash-o'></span></button></td>";
+                                    $table .= "</tr>";
+                                }
+                
+                                echo $table;
+                            ?>
+                            </tbody>
+                        </table>
+                        <footer>
+                            <div class="col-md-12 text-right">
+                                <button type="button" id="button-glyphicon" class="btn btn-circle btn-xl" data-toggle="modal" data-target="#novoRequisitante"><i class="glyphicon glyphicon-plus"></i></button><!-- Em class: novoRequisitante -->
+                            </div>
+                            <div class="container">
+						        <p class="copyright">&copy; 2018. Desenvolvido por <a href="https://github.com/marcelowzd">Marcelo Henrique</a></p>
+					        </div>
+                        </footer>
                     <div class="modal fade" id="editModal" role="dialog" aria-labelledby="exampleModalLabel">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
@@ -162,6 +191,35 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
                                     <button type="submit" form="formEdit" class="btn btn-success" name="Edit">Salvar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="novoRequisitante" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Novo requisitante</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <form role="form" id="validator" method="POST" action="#">
+                                                <div class="form-group has-feedback">
+                                                    <label for="NM_Requisitante_Add"><strong>Nome</strong></label>
+                                                    <input type="text" name="NM_Requisitante_Add" id="NM_Requisitante_Add" class="form-control"  placeholder="Digite o nome do requisitante" required />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="DS_Requisitante_Add"><strong>Descrição</strong></label>
+                                                    <input type="text" name="DS_Requisitante_Add" id="DS_Requisitante_Add" class="form-control" maxlength="50" placeholder="Digite a descrição do requisitante" required />
+                                                </div>
+                                                <div class="form-group text-center">
+                                                    <button class="btn btn-success" type="submit" title="Salvar" name="Save">Salvar</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

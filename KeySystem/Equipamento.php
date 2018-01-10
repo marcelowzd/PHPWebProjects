@@ -67,9 +67,26 @@
             return $return;
         }
         
-        public function UpdateEquipamento( $params = array() ) 
+        public function UpdateEquipamento( $codigo, $parameters ) 
         {
+            if( $this->conn )
+            {
+                $sql = "UPDATE Equipamento SET ";
 
+                foreach( $parameters as $key => $value )
+                    $sql .= $key." = '".$value."',";
+
+                $sql = substr( $sql, 0, strlen( $sql ) - 1 );
+
+                $sql .= " WHERE CD_Equipamento = ".$codigo;
+
+                if( mysqli_query( $this->conn, $sql ) )
+                    return 1;
+                else
+                    echo mysqli_error( $this->conn );
+            }
+            else
+                return 0;
         }
 
         public function DeleteEquipamento( $index )

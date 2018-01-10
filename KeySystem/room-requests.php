@@ -140,10 +140,12 @@
             
                             foreach( $requisicoesSala as $key => $value )
                             {
+                                $date = new DateTime($value['DT_Completa']);
+
                                 $table .= "<tr>";
                                 $table .= "<td>".utf8_decode($value['NM_Requisitante'])."</td>";
                                 $table .= "<td>".utf8_decode($value['NM_Chave'])."</td>";
-                                $table .= "<td>".$value['DT_Completa']."</td>";
+                                $table .= "<td>".$date->format('d/m/Y')."</td>";
                                 $table .= "<td>".$value['DT_Horario']."</td>";
                                 $table .= "<td><button type='button' onClick='EditModalChange(".$value['CD_Requisicao_Sala'].")' data-toggle='modal' data-target='#editModal' class='btn btn-success btn-sm'><span class='fa fa-edit'></span></button></td>";
                                 $table .= "<td><button type='button' onClick='DeleteRoomRequest(".$value['CD_Requisicao_Sala'].")' class='btn btn-danger btn-sm'><span class='fa fa-repeat'></span></button></td>";
