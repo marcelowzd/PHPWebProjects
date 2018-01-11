@@ -162,18 +162,26 @@
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h4> Editar Equipamento </h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Editar equipamento</h4>
                                 </div>
                                 <div class="modal-body">
                                     <form action="" method="POST" id="formEdit">
                                         <input type="hidden" value="" name="CD_Equipamento" id="CD_Equipamento">
-                                        <label class="" for="NM_Equipamento"> Nome </label>
-                                        <input type="text" value="" placeholder="" name="NM_Equipamento" id="NM_Equipamento"><br>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <form role="form" id="validator" method="POST" action="#">
+                                                    <div class="form-group has-feedback">
+                                                        <label for="NM_Equipamento"><strong>Nome</strong></label>
+                                                        <input type="text" name="NM_Equipamento" id="NM_Equipamento" class="form-control"  placeholder="Digite o nome do equipamento" required />
+                                                    </div>
+                                                    <div class="form-group text-center">
+                                                        <button class="btn btn-success" type="submit" title="Salvar" name="Edit">Salvar</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
                                     </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                                    <button type="submit" form="formEdit" class="btn btn-success" name="Edit">Salvar</button>
                                 </div>
                             </div>
                         </div>

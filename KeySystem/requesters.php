@@ -177,20 +177,28 @@
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h4> Editar requisitante </h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Editar requisitante</h4>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="" method="POST" id="formEdit">
-                                        <input type="hidden" value="" name="CD_Requisitante" id="CD_Requisitante">
-                                        <label class="" for="NM_Requisitante"> Nome </label>
-                                        <input type="text" value="" placeholder="" name="NM_Requisitante" id="NM_Requisitante"><br>
-                                        <label class="" for="DS_Requisitante"> Descrição </label>
-                                        <input type="text" value="" placeholder="" name="DS_Requisitante" id="DS_Requisitante">
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                                    <button type="submit" form="formEdit" class="btn btn-success" name="Edit">Salvar</button>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <form role="form" id="validator" method="POST" action="#">
+                                                <input type="hidden" value="" name="CD_Requisitante" id="CD_Requisitante">
+                                                <div class="form-group has-feedback">
+                                                    <label for="NM_Requisitante"><strong>Nome</strong></label>
+                                                    <input type="text" name="NM_Requisitante" id="NM_Requisitante" class="form-control"  placeholder="Digite o nome do requisitante" required />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="DS_Requisitante"><strong>Descrição</strong></label>
+                                                    <input type="text" name="DS_Requisitante" id="DS_Requisitante" class="form-control" maxlength="50" placeholder="Digite a descrição do requisitante" required />
+                                                </div>
+                                                <div class="form-group text-center">
+                                                    <button class="btn btn-success" type="submit" title="Salvar" name="Edit">Salvar</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
