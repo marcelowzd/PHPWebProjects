@@ -10,6 +10,18 @@
         if( mysqli_query( $conn, $sql ) ) echo "<p> Database DtbsChave criado com sucesso </p>";
         else echo "<p>".mysqli_error( $conn )."</p>";
 
+        $sql = "CREATE TABLE IF NOT EXISTS Usuario
+                (
+                    CD_Usuario INTEGER PRIMARY KEY AUTO_INCREMENT,
+                    NM_Usuario VARCHAR(50) NOT NULL,
+                    DS_Login_Usuario VARCHAR(50) NOT NULL,
+                    DS_Senha_Usuario VARCHAR(50) NOT NULL,
+                    DS_Acesso_Usuario VARCHAR(50) NOT NULL
+                )";
+
+        if( mysqli_query( $conn, $sql ) ) echo "<p> Tabela usuário criada com sucesso </p>";
+        else echo "<p>".mysqli_error( $conn )."</p>";
+
         $sql = "CREATE TABLE IF NOT EXISTS Requisitante
                 (
                     CD_Requisitante INTEGER PRIMARY KEY AUTO_INCREMENT,

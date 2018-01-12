@@ -78,7 +78,7 @@
             return $return;
         }
 
-        public function UpdateRequisicaoSala( $codigo, $parameters )
+        public function UpdateRequisicaoEquipamento( $codigo, $parameters )
         {
             if( $this->conn )
             {

@@ -2,6 +2,7 @@
     require 'Connection.php';
     require 'Requisitante.php';
     require 'RequisicaoSala.php';
+    require 'RequisicaoEquipamento.php';
     require 'Equipamento.php';
 
     if( array_key_exists( 'CD_Requisicao_Sala_Edit', $_GET ) )
@@ -84,6 +85,34 @@
             $equipamento = new Equipamento( );
 
             if( $equipamento->DeleteEquipamento( $idEquipamento ) )
+                echo "Deletado";
+        }
+    }
+
+    if( array_key_exists( 'CD_Requisicao_Equipamento_Edit', $_GET ) )
+    {
+        $idRequisicaoEquipamento = $_GET['CD_Requisicao_Equipamento_Edit'];
+
+        if( is_numeric( $idRequisicaoEquipamento ) && intval( $idRequisicaoEquipamento ) > 0 )
+        {
+            $requisicaoEquipamento = new RequisicaoEquipamento( );
+
+            $requisicoesEquipamento = $requisicaoEquipamento->ReadRequisicaoEquipamento( $idRequisicaoEquipamento, null, null );
+
+            if( is_array( $requisicoesEquipamento ) )
+            { echo json_encode( $requisicoesEquipamento ); }
+        }
+    }
+
+    if( array_key_exists( 'CD_Requisicao_Equipamento_Del', $_GET ) )
+    {
+        $idRequisicaoEquipamento = $_GET['CD_Requisicao_Equipamento_Del'];
+
+        if( is_numeric( $idRequisicaoEquipamento ) && intval( $idRequisicaoEquipamento ) > 0 )
+        {
+            $requisicaoEquipamento = new RequisicaoEquipamento( );
+
+            if( $requisicaoEquipamento->DeleteRequisicaoEquipamento( $idRequisicaoEquipamento ) )
                 echo "Deletado";
         }
     }

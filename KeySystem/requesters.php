@@ -62,15 +62,20 @@
                     if( !is_null( $desc ) && strlen( $desc ) > 3 && !is_numeric( $desc ) )
                     {
                         if( $requisitante->CreateRequisitante( $nome, $desc ) )
-                            echo "<script> alert('Cadastrado com sucesso'); </script>";
+                            echo "
+                                <script> 
+                                    alert('Cadastrado com sucesso'); 
+                                    window.top.location.href = window.top.location.protocol +'//'+ window.top.location.host + window.top.location.pathname + window.top.location.search;
+                                </script>
+                                ";
                         else
-                            echo "<script> alert('Não foi possível cadastrar'); </script>";
+                            echo "<script> alert('Não foi possível inserir no banco'); </script>";
                     }
                     else
-                        echo "<script> alert('Não foi possível cadastrar'); </script>";
+                        echo "<script> alert('Descrição inválida'); </script>";
                 }
                 else
-                    echo "<script> alert('Não foi possível cadastrar'); </script>";
+                    echo "<script> alert('Nome inválido'); </script>";
             }
         ?>
         <div class="wrapper">
@@ -165,14 +170,6 @@
                             ?>
                             </tbody>
                         </table>
-                        <footer>
-                            <div class="col-md-12 text-right">
-                                <button type="button" id="button-glyphicon" class="btn btn-circle btn-xl" data-toggle="modal" data-target="#novoRequisitante"><i class="glyphicon glyphicon-plus"></i></button><!-- Em class: novoRequisitante -->
-                            </div>
-                            <div class="container">
-						        <p class="copyright">&copy; 2018. Desenvolvido por <a href="https://github.com/marcelowzd">Marcelo Henrique</a></p>
-					        </div>
-                        </footer>
                     <div class="modal fade" id="editModal" role="dialog" aria-labelledby="exampleModalLabel">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
@@ -203,35 +200,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal fade" id="novoRequisitante" role="dialog">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">Novo requisitante</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <form role="form" id="validator" method="POST" action="#">
-                                                <div class="form-group has-feedback">
-                                                    <label for="NM_Requisitante_Add"><strong>Nome</strong></label>
-                                                    <input type="text" name="NM_Requisitante_Add" id="NM_Requisitante_Add" class="form-control"  placeholder="Digite o nome do requisitante" required />
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="DS_Requisitante_Add"><strong>Descrição</strong></label>
-                                                    <input type="text" name="DS_Requisitante_Add" id="DS_Requisitante_Add" class="form-control" maxlength="50" placeholder="Digite a descrição do requisitante" required />
-                                                </div>
-                                                <div class="form-group text-center">
-                                                    <button class="btn btn-success" type="submit" title="Salvar" name="Save">Salvar</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 <?php } else { // Fim do IF IsArray() ?>
                     <div class="jumbotron">
                         <h1 class="display-3">Sistema de chaves</h1>
@@ -239,6 +207,43 @@
                         <hr class="my-4">
                     </div>
                 <?php } // Fim do else ?>
+                <footer>
+                    <div class="col-md-12 text-right">
+                        <button type="button" id="button-glyphicon" class="btn btn-circle btn-xl" data-toggle="modal" data-target="#novoRequisitante"><i class="glyphicon glyphicon-plus"></i></button><!-- Em class: novoRequisitante -->
+                    </div>
+                    <div class="container">
+				        <p class="copyright">&copy; 2018. Desenvolvido por <a href="https://github.com/marcelowzd">Marcelo Henrique</a></p>
+				    </div>
+                </footer>
+                <div class="modal fade" id="novoRequisitante" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Novo requisitante</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <form role="form" id="validator" method="POST" action="#">
+                                            <div class="form-group has-feedback">
+                                                <label for="NM_Requisitante_Add"><strong>Nome</strong></label>
+                                                <input type="text" name="NM_Requisitante_Add" id="NM_Requisitante_Add" class="form-control"  placeholder="Digite o nome do requisitante" required />
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="DS_Requisitante_Add"><strong>Descrição</strong></label>
+                                                <input type="text" name="DS_Requisitante_Add" id="DS_Requisitante_Add" class="form-control" maxlength="50" placeholder="Digite a descrição do requisitante" required />
+                                            </div>
+                                            <div class="form-group text-center">
+                                                <button class="btn btn-success" type="submit" title="Salvar" name="Save">Salvar</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

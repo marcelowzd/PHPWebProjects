@@ -66,7 +66,12 @@
                 if( is_numeric( $idChave ) && intval( $idChave ) > 0 )
                     if( is_numeric( $idRequisitante ) && intval( $idRequisitante ) > 0 )
                         if( $requisicaoSala->CreateRequisicaoSala( $idChave, $idRequisitante, date("Y-m-d"), date("H:i:s") ) )
-                            echo "<script> alert('Adicionado com sucesso'); </script>";
+                            echo "
+                                <script> 
+                                    alert('Cadastrado com sucesso'); 
+                                    window.top.location.href = window.top.location.protocol +'//'+ window.top.location.host + window.top.location.pathname + window.top.location.search;
+                                </script>
+                                ";
                         else
                             echo "<script> alert('Chaves duplicadas'); </script>";
                     else
@@ -171,14 +176,6 @@
                         ?>
                         </tbody>
                     </table>
-                    <footer>
-                        <div class="col-md-12 text-right">
-                            <button type="button" id="button-glyphicon" class="btn btn-circle btn-xl" data-toggle="modal" data-target="#novaRequisicaoSala"><i class="glyphicon glyphicon-plus"></i></button><!-- Em class: novoEquipamento -->
-                        </div>
-                        <div class="container">
-						    <p class="copyright">&copy; 2018. Desenvolvido por <a href="https://github.com/marcelowzd">Marcelo Henrique</a></p>
-					    </div>
-                    </footer>
                     <div class="modal fade" id="editModal" role="dialog" aria-labelledby="exampleModalLabel">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
@@ -218,49 +215,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal fade" id="novaRequisicaoSala" role="dialog">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">Novo requisição de sala</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <form role="form" id="validator" method="POST" action="#">
-                                                <div class="form-group has-feedback">
-                                                    <label for="CD_Requisitante_Add"><strong>Requisitante</strong></label>
-                                                    <select name="CD_Requisitante_Add" id="CD_Requisitante_Add">
-                                                    <?php
-                                                        $requisitantes = $requisitante->ReadRequisitante(null, null, true);
-
-                                                        foreach( $requisitantes as $value => $key )
-                                                            echo "<option index='".$key['CD_Requisitante']."' value='".$key['CD_Requisitante']."'>".$key['NM_Requisitante']."</option>";
-                                                    ?>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group has-feedback">
-                                                    <label for="CD_Chave_Add"><strong>Sala</strong></label>
-                                                    <select name="CD_Chave_Add" id="CD_Chave_Add">
-                                                    <?php
-                                                        $chaves = $chave->ReadChave(null, null, true);
-
-                                                        foreach( $chaves as $value => $key )
-                                                            echo "<option index='".$key['CD_Chave']."' value='".$key['CD_Chave']."'>".$key['NM_Chave']."</option>";
-                                                    ?>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group text-center">
-                                                    <button class="btn btn-success" type="submit" title="Salvar" name="Save">Salvar</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 <?php   } else { // Fim do IF IsArray() ?>
                     <div class="jumbotron">
                         <h1 class="display-3">Sistema de chaves</h1>
@@ -268,21 +222,57 @@
                         <hr class="my-4">
                     </div>
                 <?php } // Fim do else ?>
-                <!--
-                <h2>Collapsible Sidebar Using Bootstrap 3</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-               
-                <div class="line"></div>
-                <h2>Lorem Ipsum Dolor</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                <div class="line"></div>
-                <h2>Lorem Ipsum Dolor</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                <div class="line"></div>
-                <h3>Lorem Ipsum Dolor</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                -->
+                <footer>
+                    <div class="col-md-12 text-right">
+                        <button type="button" id="button-glyphicon" class="btn btn-circle btn-xl" data-toggle="modal" data-target="#novaRequisicaoSala"><i class="glyphicon glyphicon-plus"></i></button><!-- Em class: novoEquipamento -->
+                    </div>
+                    <div class="container">
+						<p class="copyright">&copy; 2018. Desenvolvido por <a href="https://github.com/marcelowzd">Marcelo Henrique</a></p>
+					</div>
+                </footer>
+                <div class="modal fade" id="novaRequisicaoSala" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Novo requisição de sala</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <form role="form" id="validator" method="POST" action="#">
+                                            <div class="form-group has-feedback">
+                                                <label for="CD_Requisitante_Add"><strong>Requisitante</strong></label>
+                                                <select name="CD_Requisitante_Add" id="CD_Requisitante_Add">
+                                                <?php
+                                                    $requisitantes = $requisitante->ReadRequisitante(null, null, true);
+
+                                                    foreach( $requisitantes as $value => $key )
+                                                        echo "<option index='".$key['CD_Requisitante']."' value='".$key['CD_Requisitante']."'>".$key['NM_Requisitante']."</option>";
+                                                ?>
+                                                </select>
+                                            </div>
+                                            <div class="form-group has-feedback">
+                                                <label for="CD_Chave_Add"><strong>Sala</strong></label>
+                                                <select name="CD_Chave_Add" id="CD_Chave_Add">
+                                                <?php
+                                                    $chaves = $chave->ReadChave(null, null, true);
+
+                                                    foreach( $chaves as $value => $key )
+                                                        echo "<option index='".$key['CD_Chave']."' value='".$key['CD_Chave']."'>".$key['NM_Chave']."</option>";
+                                                ?>
+                                                </select>
+                                            </div>
+                                            <div class="form-group text-center">
+                                                <button class="btn btn-success" type="submit" title="Salvar" name="Save">Salvar</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

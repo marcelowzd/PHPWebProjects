@@ -35,13 +35,47 @@
                 if( is_numeric( $idRequisitante ) && intval( $idRequisitante ) > 0 )
                     if( is_numeric( $idEquipamento ) && intval( $idEquipamento ) > 0 )
                         if( $requisicaoEquipamento->CreateRequisicaoEquipamento( $idEquipamento, $idRequisitante, date("Y-m-d"), date("H:i:s") ) )
-                            echo "<script> alert('Adicionado com sucesso'); </script>";
+                            echo "
+                                <script> 
+                                    alert('Cadastrado com sucesso'); 
+                                    window.top.location.href = window.top.location.protocol +'//'+ window.top.location.host + window.top.location.pathname + window.top.location.search;
+                                </script>
+                                ";
                         else
                             echo "<script> alert('Chaves duplicadas'); </script>";
                     else
                         echo "<script> alert('Número inválido para equipamento'); </script>";
                 else
                     echo "<script> alert('Número inválido para requisitante'); </script>";
+            }
+            else if( array_key_exists( "Edit", $_POST ) )
+            {
+                $idRequisicaoEquipamento = $_POST['CD_Requisicao_Equipamento'];
+                $idRequisitante = $_POST['CD_Requisitante'];
+                $idEquipamento = $_POST['CD_Equipamento'];
+
+                if( is_numeric( $idRequisicaoEquipamento ) && intval( $idRequisicaoEquipamento ) > 0 )
+                {
+                    if( is_numeric( $idRequisitante ) && intval( $idRequisitante ) > 0 )
+                    {
+                        if( is_numeric( $idEquipamento ) && intval( $idEquipamento ) > 0 )
+                        {
+                            $varToSend = array( );
+
+                            $originValues = $requisicaoEquipamento->ReadRequisicaoEquipamento( $idRequisicaoEquipamento, null, null );
+
+                            if( $originValues[ 0 ][ 'CD_Requisitante' ] != $idRequisitante )
+                                $varToSend[ 'CD_Requisitante' ] = $idRequisitante;
+
+                            if( $originValues[ 0 ][ 'CD_Equipamento' ] != $idEquipamento )
+                                $varToSend[ 'CD_Equipamento' ] = $idEquipamento;
+
+                            if( sizeof( $varToSend ) > 0 )
+                                if( $requisicaoEquipamento->UpdateRequisicaoEquipamento( $idRequisicaoEquipamento, $varToSend ) )
+                                    echo "<script> alert('Atualizado com sucesso'); </script>";
+                        }
+                    }
+                }
             }
         ?>
         <div class="wrapper">
@@ -107,7 +141,7 @@
                                 $table .= "<td>".$value['DT_Completa']."</td>";
                                 $table .= "<td>".$value['DT_Horario']."</td>";
                                 $table .= "<td><button type='button' onClick='EditModalChange(".$value['CD_Requisicao_Equipamento'].")' data-toggle='modal' data-target='#editModal' class='btn btn-success btn-sm'><span class='fa fa-edit'></span></button></td>";
-                                $table .= "<td><button type='button' onClick='DeleteRoomRequest(".$value['CD_Requisicao_Equipamento'].")' class='btn btn-danger btn-sm'><span class='fa fa-repeat'></span></button></td>";
+                                $table .= "<td><button type='button' onClick='DeleteEquipmentRequest(".$value['CD_Requisicao_Equipamento'].")' class='btn btn-danger btn-sm'><span class='fa fa-repeat'></span></button></td>";
                                 $table .= "</tr>";
                             }
             
