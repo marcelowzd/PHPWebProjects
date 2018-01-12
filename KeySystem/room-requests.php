@@ -20,7 +20,6 @@
         <?php
             require 'Connection.php';
             require 'Requisitante.php';
-            require 'Equipamento.php';
             require 'Chave.php';
             require 'RequisicaoSala.php';
     
@@ -59,6 +58,22 @@
                     }
                 }
             }
+            else if( array_key_exists( "Save", $_POST ) )
+            {
+                $idChave = $_POST['CD_Chave_Add'];
+                $idRequisitante = $_POST['CD_Requisitante_Add'];
+
+                if( is_numeric( $idChave ) && intval( $idChave ) > 0 )
+                    if( is_numeric( $idRequisitante ) && intval( $idRequisitante ) > 0 )
+                        if( $requisicaoSala->CreateRequisicaoSala( $idChave, $idRequisitante, date("Y-m-d"), date("H:i:s") ) )
+                            echo "<script> alert('Adicionado com sucesso'); </script>";
+                        else
+                            echo "<script> alert('Chaves duplicadas'); </script>";
+                    else
+                        echo "<script> alert('Número inválido para requisitante'); </script>";
+                else
+                    echo "<script> alert('Número inválido para chave'); </script>";
+            }
         ?>
         <div class="wrapper">
             <nav id="sidebar">
@@ -79,7 +94,7 @@
                         </ul>-->
                     </li>
                     <li>
-                        <a href="#"><i class="fa fa-microchip fa-1x" aria-hidden="true"></i>  Req. de equipamento</a>
+                        <a href="equipment-requests.php"><i class="fa fa-microchip fa-1x" aria-hidden="true"></i>  Req. de equipamento</a>
                         <!--<a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false">Pages</a>
                         <ul class="collapse list-unstyled" id="pageSubmenu">
                             <li><a href="#">Page 1</a></li>
@@ -156,6 +171,14 @@
                         ?>
                         </tbody>
                     </table>
+                    <footer>
+                        <div class="col-md-12 text-right">
+                            <button type="button" id="button-glyphicon" class="btn btn-circle btn-xl" data-toggle="modal" data-target="#novaRequisicaoSala"><i class="glyphicon glyphicon-plus"></i></button><!-- Em class: novoEquipamento -->
+                        </div>
+                        <div class="container">
+						    <p class="copyright">&copy; 2018. Desenvolvido por <a href="https://github.com/marcelowzd">Marcelo Henrique</a></p>
+					    </div>
+                    </footer>
                     <div class="modal fade" id="editModal" role="dialog" aria-labelledby="exampleModalLabel">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
@@ -165,29 +188,75 @@
                                 <div class="modal-body">
                                     <form action="" method="POST" id="formEdit">
                                         <input type="hidden" value="" name="CD_Requisicao_Sala" id="CD_Requisicao_Sala">
-                                        <label class="" for="CD_Requisitante"> Requisitante </label>
-                                        <select name="CD_Requisitante" id="CD_Requisitante">
-                                        <?php
-                                            $requisitantes = $requisitante->ReadRequisitante(null, null, true);
+                                        <div class="form-group has-feedback">
+                                            <label for="CD_Requisitante"><strong>Requisitante</strong></label>
+                                            <select name="CD_Requisitante" id="CD_Requisitante">
+                                            <?php
+                                                $requisitantes = $requisitante->ReadRequisitante(null, null, true);
 
-                                            foreach( $requisitantes as $value => $key )
-                                                echo "<option index='".$key['CD_Requisitante']."' value='".$key['CD_Requisitante']."'>".$key['NM_Requisitante']."</option>";
-                                        ?>
-                                        </select><br>
-                                        <label class="" for="CD_Chave"> Chave </label>
-                                        <select name="CD_Chave" id="CD_Chave">
-                                        <?php
-                                            $chaves = $chave->ReadChave(null, null, true);
+                                                foreach( $requisitantes as $value => $key )
+                                                    echo "<option index='".$key['CD_Requisitante']."' value='".$key['CD_Requisitante']."'>".$key['NM_Requisitante']."</option>";
+                                            ?>
+                                            </select>
+                                        </div>
+                                        <div class="form-group has-feedback">
+                                            <label for="CD_Chave"><strong>Sala</strong></label>
+                                            <select name="CD_Chave" id="CD_Chave">
+                                            <?php
+                                                $chaves = $chave->ReadChave(null, null, true);
 
-                                            foreach( $chaves as $value => $key )
-                                                echo "<option index='".$key['CD_Chave']."' value='".$key['CD_Chave']."'>".$key['NM_Chave']."</option>";
-                                        ?>
-                                        </select>
+                                                foreach( $chaves as $value => $key )
+                                                    echo "<option index='".$key['CD_Chave']."' value='".$key['CD_Chave']."'>".$key['NM_Chave']."</option>";
+                                            ?>
+                                            </select>
+                                        </div>
+                                        <div class="form-group text-center">
+                                            <button class="btn btn-success" type="submit" title="Salvar" name="Edit">Salvar</button>
+                                        </div>
                                     </form>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                                    <button type="submit" form="formEdit" class="btn btn-success" name="Edit">Salvar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="novaRequisicaoSala" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Novo requisição de sala</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <form role="form" id="validator" method="POST" action="#">
+                                                <div class="form-group has-feedback">
+                                                    <label for="CD_Requisitante_Add"><strong>Requisitante</strong></label>
+                                                    <select name="CD_Requisitante_Add" id="CD_Requisitante_Add">
+                                                    <?php
+                                                        $requisitantes = $requisitante->ReadRequisitante(null, null, true);
+
+                                                        foreach( $requisitantes as $value => $key )
+                                                            echo "<option index='".$key['CD_Requisitante']."' value='".$key['CD_Requisitante']."'>".$key['NM_Requisitante']."</option>";
+                                                    ?>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group has-feedback">
+                                                    <label for="CD_Chave_Add"><strong>Sala</strong></label>
+                                                    <select name="CD_Chave_Add" id="CD_Chave_Add">
+                                                    <?php
+                                                        $chaves = $chave->ReadChave(null, null, true);
+
+                                                        foreach( $chaves as $value => $key )
+                                                            echo "<option index='".$key['CD_Chave']."' value='".$key['CD_Chave']."'>".$key['NM_Chave']."</option>";
+                                                    ?>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group text-center">
+                                                    <button class="btn btn-success" type="submit" title="Salvar" name="Save">Salvar</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -33,7 +33,7 @@
                 $sql .= "WHERE CD_Requisicao_Equipamento = $id";
             else if( $idRequester )
                 $sql .= "WHERE CD_Requisitante = $idRequester";
-            else if( $idKey )
+            else if( $idEquipment )
                 $sql .= "WHERE CD_Equipamento = $idEquipment";
             else
                 $sql .= "WHERE CD_Requisicao_Equipamento > 0";
