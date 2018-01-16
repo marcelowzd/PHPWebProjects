@@ -18,14 +18,18 @@
     </head>
     <body>
         <?php
+            session_start();
+
             require 'Connection.php';
             require 'Requisitante.php';
             require 'Equipamento.php';
             require 'RequisicaoEquipamento.php';
+            require 'Usuario.php';
     
             $requisitante = new Requisitante();
             $requisicaoEquipamento = new RequisicaoEquipamento();
             $equipamento = new Equipamento();
+            $usuario = new Usuario();
 
             if( array_key_exists( "Save", $_POST ) )
             {
@@ -77,6 +81,9 @@
                     }
                 }
             }
+            
+            if( $usuario->getUserAccess() != "Offline")
+            {
         ?>
         <div class="wrapper">
         <nav id="sidebar">
@@ -100,6 +107,13 @@
                     <li>
                         <a href="equipments.php"><i class="fa fa-microphone fa-1x" aria-hidden="true"></i>  Equipamentos</a>
                     </li>
+                        <?php
+                            if( $usuario->getUserAccess() == "Admin" ){ 
+                        ?>
+                    <li>
+                        <a href="users.php"><i class="fa fa-user-o fa-1x" aria-hidden="true"></i> Usuários </a>
+                    </li>
+                        <?php } ?>
                 </ul>
             </nav>
             <div id="content">
@@ -135,10 +149,12 @@
             
                             foreach( $requisicoesEquipamento as $key => $value )
                             {
+                                $date = new DateTime($value['DT_Completa']);
+
                                 $table .= "<tr>";
                                 $table .= "<td>".utf8_decode($value['NM_Requisitante'])."</td>";
                                 $table .= "<td>".utf8_decode($value['NM_Equipamento'])."</td>";
-                                $table .= "<td>".$value['DT_Completa']."</td>";
+                                $table .= "<td>".$date->format('d/m/Y')."</td>";
                                 $table .= "<td>".$value['DT_Horario']."</td>";
                                 $table .= "<td><button type='button' onClick='EditModalChange(".$value['CD_Requisicao_Equipamento'].")' data-toggle='modal' data-target='#editModal' class='btn btn-success btn-sm'><span class='fa fa-edit'></span></button></td>";
                                 $table .= "<td><button type='button' onClick='DeleteEquipmentRequest(".$value['CD_Requisicao_Equipamento'].")' class='btn btn-danger btn-sm'><span class='fa fa-repeat'></span></button></td>";
@@ -330,5 +346,8 @@
                 alert('Seu navegador não pode trabalhar com Ajax!');
             }
         </script>
+            <?php } else {
+                header("Location: login-page.php");
+            } ?>
     </body>
 </html>

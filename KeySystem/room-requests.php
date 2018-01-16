@@ -18,14 +18,18 @@
     </head>
     <body>
         <?php
+            session_start();
+
             require 'Connection.php';
             require 'Requisitante.php';
             require 'Chave.php';
             require 'RequisicaoSala.php';
+            require 'Usuario.php';
     
             $requisitante = new Requisitante();
             $requisicaoSala = new RequisicaoSala();
             $chave = new Chave();
+            $usuario = new Usuario();
 
             if( array_key_exists( "Edit", $_POST ) ) // Edit button pressed
             {
@@ -79,6 +83,9 @@
                 else
                     echo "<script> alert('Número inválido para chave'); </script>";
             }
+
+            if( $usuario->getUserAccess() != "Offline")
+            {
         ?>
         <div class="wrapper">
             <nav id="sidebar">
@@ -113,6 +120,13 @@
                     <li>
                         <a href="equipments.php"><i class="fa fa-microphone fa-1x" aria-hidden="true"></i>  Equipamentos</a>
                     </li>
+                        <?php
+                            if( $usuario->getUserAccess() == "Admin" ){ 
+                        ?>
+                    <li>
+                        <a href="users.php"><i class="fa fa-user-o fa-1x" aria-hidden="true"></i> Usuários </a>
+                    </li>
+                        <?php } ?>
                 </ul>
                 <!--<ul class="list-unstyled CTAs">
                     <li><a href="https://bootstrapious.com/tutorial/files/sidebar.zip" class="download">Download source</a></li>
@@ -358,5 +372,8 @@
                 alert('Seu navegador não pode trabalhar com Ajax!');
             }
         </script>
+        <?php } else {
+                header("Location: login-page.php");
+            } ?>
     </body>
 </html>

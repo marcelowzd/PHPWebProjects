@@ -14,6 +14,7 @@
                 (
                     CD_Usuario INTEGER PRIMARY KEY AUTO_INCREMENT,
                     NM_Usuario VARCHAR(50) NOT NULL,
+                    DS_Email_Usuario VARCHAR(50) NOT NULL,
                     DS_Login_Usuario VARCHAR(50) NOT NULL,
                     DS_Senha_Usuario VARCHAR(50) NOT NULL,
                     DS_Acesso_Usuario VARCHAR(50) NOT NULL
@@ -50,30 +51,6 @@
         if( mysqli_query( $conn, $sql ) ) echo "<p> Tabela equipamento criada com sucesso </p>";
         else echo "<p>".mysqli_error( $conn )."</p>";
 
-        $sql = "CREATE TABLE IF NOT EXISTS HistoricoChave
-                (
-                    CD_Historico_Chave INTEGER PRIMARY KEY AUTO_INCREMENT,
-                    NM_Chave VARCHAR(50) NOT NULL,
-                    NM_Requisitante VARCHAR(50) NOT NULL,
-                    DT_Completa DATE NOT NULL,
-                    DT_Horario DATETIME NOT NULL
-                )";
-
-        if( mysqli_query( $conn, $sql ) ) echo "<p> Tabela HistoricoChave criada com sucesso </p>";
-        else echo "<p>".mysqli_error( $conn )."</p>";
-
-        $sql = "CREATE TABLE IF NOT EXISTS HistoricoEquipamento
-                (
-                    CD_Historico_Equipamento INTEGER PRIMARY KEY AUTO_INCREMENT,
-                    NM_Equipamento VARCHAR(50) NOT NULL,
-                    NM_Requisitante VARCHAR(50) NOT NULL,
-                    DT_Completa DATE NOT NULL,
-                    DT_Horario DATETIME NOT NULL
-                )";
-
-        if( mysqli_query( $conn, $sql ) ) echo "<p> Tabela HistoricoEquipamento criada com sucesso </p>";
-        else echo "<p>".mysqli_error( $conn )."</p>";
-
         $sql = "CREATE TABLE IF NOT EXISTS RequisicaoSala
                 (
                     CD_Requisicao_Sala INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -102,6 +79,31 @@
         if( mysqli_query( $conn, $sql ) ) echo "<p> Tabela RequisicaoEquipamento criada com sucesso </p>";
         else echo "<p>".mysqli_error( $conn )."</p>";
 
+        $sql = "CREATE TABLE IF NOT EXISTS HistoricoChave
+                (
+                    CD_Historico_Chave INTEGER PRIMARY KEY AUTO_INCREMENT,
+                    NM_Chave VARCHAR(50) NOT NULL,
+                    NM_Requisitante VARCHAR(50) NOT NULL,
+                    NM_Usuario VARCHAR(50) NOT NULL,
+                    DT_Completa DATE NOT NULL,
+                    DT_Horario DATETIME NOT NULL
+                )";
+
+        if( mysqli_query( $conn, $sql ) ) echo "<p> Tabela HistoricoChave criada com sucesso </p>";
+        else echo "<p>".mysqli_error( $conn )."</p>";
+
+        $sql = "CREATE TABLE IF NOT EXISTS HistoricoEquipamento
+                (
+                    CD_Historico_Equipamento INTEGER PRIMARY KEY AUTO_INCREMENT,
+                    NM_Equipamento VARCHAR(50) NOT NULL,
+                    NM_Requisitante VARCHAR(50) NOT NULL,
+                    NM_Usuario VARCHAR(50) NOT NULL,
+                    DT_Completa DATE NOT NULL,
+                    DT_Horario DATETIME NOT NULL
+                )";
+
+        if( mysqli_query( $conn, $sql ) ) echo "<p> Tabela HistoricoEquipamento criada com sucesso </p>";
+        else echo "<p>".mysqli_error( $conn )."</p>";
     }
     else echo mysqli_error( $conn );
 ?>

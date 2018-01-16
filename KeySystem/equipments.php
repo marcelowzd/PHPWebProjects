@@ -18,10 +18,14 @@
     </head>
     <body>
         <?php
+            session_start();
+
             require 'Connection.php';
             require 'Equipamento.php';
+            require 'Usuario.php';
     
             $equipamento = new Equipamento();
+            $usuario = new Usuario();
 
             if( array_key_exists( "Edit", $_POST ) )
             {
@@ -64,6 +68,9 @@
                 else
                     echo "<script> alert('Não foi possível cadastrar'); </script>";
             }
+
+            if( $usuario->getUserAccess() != "Offline")
+            {
         ?>
         <div class="wrapper">
             <nav id="sidebar">
@@ -98,6 +105,13 @@
                     <li class="active">
                         <a href="#"><i class="fa fa-microphone fa-1x" aria-hidden="true"></i>  Equipamentos</a>
                     </li>
+                        <?php
+                            if( $usuario->getUserAccess() == "Admin" ){ 
+                        ?>
+                    <li>
+                        <a href="users.php"><i class="fa fa-user-o fa-1x" aria-hidden="true"></i> Usuários </a>
+                    </li>
+                        <?php } ?>
                 </ul>
                 <!--<ul class="list-unstyled CTAs">
                     <li><a href="https://bootstrapious.com/tutorial/files/sidebar.zip" class="download">Download source</a></li>
@@ -309,5 +323,8 @@
                 alert('Seu navegador não pode trabalhar com Ajax!');
             }
         </script>
+        <?php } else {
+                header("Location: login-page.php");
+            } ?>
     </body>
 </html>
