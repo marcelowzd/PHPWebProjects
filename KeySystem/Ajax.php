@@ -4,6 +4,12 @@
     require 'RequisicaoSala.php';
     require 'RequisicaoEquipamento.php';
     require 'Equipamento.php';
+    require 'Usuario.php';
+    require 'Chave.php';
+    require 'HistoricoChave.php';
+    require 'HistoricoEquipamento.php';
+
+    session_start();
 
     if( array_key_exists( 'CD_Requisicao_Sala_Edit', $_GET ) )
     {
@@ -27,6 +33,7 @@
         if( is_numeric( $idRequisicaoSala ) && intval( $idRequisicaoSala ) > 0 )
         {
             $requisicaoSala = new RequisicaoSala( );
+            $usuario = new Usuario( );
 
             if( $requisicaoSala->DeleteRequisicaoSala( $idRequisicaoSala ) )
                 echo "Deletado";
@@ -113,6 +120,34 @@
             $requisicaoEquipamento = new RequisicaoEquipamento( );
 
             if( $requisicaoEquipamento->DeleteRequisicaoEquipamento( $idRequisicaoEquipamento ) )
+                echo "Deletado";
+        }
+    }
+
+    if( array_key_exists( 'CD_Chave_Edit', $_GET ) )
+    {
+        $idChave = $_GET['CD_Chave_Edit'];
+
+        if( is_numeric( $idChave ) && intval( $idChave ) > 0 )
+        {
+            $chave = new Chave( );
+
+            $chaves = $chave->ReadChave( $idChave, null, null );
+
+            if( is_array( $chaves ) )
+            { echo json_encode( $chaves ); }
+        }
+    }
+
+    if( array_key_exists( 'CD_Chave_Del', $_GET ) )
+    {
+        $idChave = $_GET['CD_Chave_Del'];
+
+        if( is_numeric( $idChave ) && intval( $idChave ) > 0 )
+        {
+            $chave = new Chave( );
+
+            if( $chave->DeleteChave( $idChave ) )
                 echo "Deletado";
         }
     }

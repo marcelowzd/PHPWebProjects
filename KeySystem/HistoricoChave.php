@@ -1,5 +1,5 @@
 <?php
-    class HistoricoEquipamento
+    class HistoricoChave
     {
         private $conn;
 
@@ -9,14 +9,14 @@
         public function __destruct()
         { $this->conn = null; }
 
-        public function CreateHistoricoEquipamento( 
-                                                $equipamento, $requisitante, $usuario, 
+        public function CreateHistoricoChave( 
+                                                $chave, $requisitante, $usuario, 
                                                 $dtRecebida, $dtHorarioRecebido,
                                                 $dtEntregue, $dtHorarioEntregue 
                                             )
         {
-            $stmt = $this->conn->prepare( "INSERT INTO HistoricoEquipamento VALUES (null, ?, ?, ?, ?, ?, ?, ? )" );
-            $stmt->bind_param( "sssssss", $equipamento, $requisitante, $usuario, $dtRecebida, $dtHorarioRecebido,
+            $stmt = $this->conn->prepare( "INSERT INTO HistoricoChave VALUES (null, ?, ?, ?, ?, ?, ?, ? )" );
+            $stmt->bind_param( "sssssss", $chave, $requisitante, $usuario, $dtRecebida, $dtHorarioRecebido,
             $dtEntregue, $dtHorarioEntregue );
             
             $return = ( $stmt->execute() == false ? false : true );
@@ -26,14 +26,14 @@
             return $return;
         }
 
-        public function ReadHistoricoEquipamento( $id = null, $equipamento = null, $requisitante = null, $usuario = null, $dtRecebida = null, $dtHorarioRecebido = null, $dtEntregue = null, $dtHorarioEntregue = null )
+        public function ReadHistoricoChave( $id = null, $chave = null, $requisitante = null, $usuario = null, $dtRecebida = null, $dtHorarioRecebido = null, $dtEntregue = null, $dtHorarioEntregue = null )
         {
-            $sql = "SELECT * FROM HistoricoEquipamento ";
+            $sql = "SELECT * FROM HistoricoChave ";
 
             if( $id )
-                $sql .= "WHERE CD_Historico_Equipamento = $id";
-            else if( $equipamento )
-                $sql .= "WHERE NM_Equipamento LIKE $equipamento";
+                $sql .= "WHERE CD_Historico_Chave = $id";
+            else if( $chave )
+                $sql .= "WHERE NM_Chave LIKE $chave";
             else if( $requisitante )
                 $sql .= "WHERE NM_Requisitante LIKE $requisitante";
             else if( $usuario )
@@ -47,7 +47,7 @@
             else if( $dtHorarioEntregue )
                 $sql .= "WHERE DT_Entrega = $dtHorarioEntregue";
             else
-                $sql .= "WHERE CD_Historico_Equipamento > 0";
+                $sql .= "WHERE CD_Historico_Chave > 0";
 
             $stmt = $this->conn->prepare($sql);
             
@@ -55,7 +55,7 @@
             $stmt->store_result();
             $stmt->bind_result
                             (
-                                $idHistoricoEquipamento, $nmequipamento, $nmrequisitante, 
+                                $idHistoricoChave, $nmchave, $nmrequisitante, 
                                 $nmusuario, $dtcompletarecebidaANS, 
                                 $dthorariorecebidoANS, $dtcompletaentregueANS, $dthorarioentregueANS 
                             );
@@ -71,8 +71,8 @@
                 {
                     $return[$count] = array
                     (
-                        'CD_Historico_Equipamento' => $idHistoricoEquipamento,
-                        'NM_Equipamento' => $nmequipamento,
+                        'CD_Historico_Chave' => $idHistoricoChave,
+                        'NM_Chave' => $nmchave,
                         'NM_Requisitante' => $nmrequisitante,
                         'NM_Usuario' => $nmusuario,
                         'DT_Completa_Recebida' => $dtcompletarecebidaANS,
@@ -90,18 +90,18 @@
             return $return;
         }
 
-        /*public function UpdateHistoricoEquipamento( $codigo, $parameters )
+        /*public function UpdateHistoricoChave( $codigo, $parameters )
         {
             if( $this->conn )
             {
-                $sql = "UPDATE HistoricoEquipamento SET ";
+                $sql = "UPDATE HistoricoChave SET ";
 
                 foreach( $parameters as $key => $value )
                     $sql .= $key." = '".$value."',";
 
                 $sql = substr( $sql, 0, strlen( $sql ) - 1 );
 
-                $sql .= " WHERE CD_Historico_Equipamento = ".$codigo;
+                $sql .= " WHERE CD_Historico_Chave = ".$codigo;
 
                 if( mysqli_query( $this->conn, $sql ) )
                     return 1;
@@ -112,9 +112,9 @@
                 return 0;
         }*/
 
-        public function DeleteHistoricoEquipamento( $index )
+        public function DeleteHistoricoChave( $index )
         {
-            $stmt = $this->conn->prepare( "DELETE FROM HistoricoEquipamento WHERE CD_Historico_Equipamento = ?" );
+            $stmt = $this->conn->prepare( "DELETE FROM HistoricoChave WHERE CD_Historico_Chave = ?" );
             $stmt->bind_param( "i", $index );
 
             $return = ( $stmt->execute() == false ? false : true );

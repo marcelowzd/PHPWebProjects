@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-        <title>Equipamentos</title>
+        <title>Labs / Salas</title>
 
         <!-- Bootstrap CSS CDN -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -21,54 +21,54 @@
             session_start();
 
             require 'Connection.php';
-            require 'Equipamento.php';
+            require 'Chave.php';
             require 'Usuario.php';
     
-            $equipamento = new Equipamento();
+            $chave = new Chave();
             $usuario = new Usuario();
 
-            if( array_key_exists( "Edit", $_POST ) )
+            if( array_key_exists( "Edit", $_POST ) ) // Edit button pressed
             {
-                $idEquipamento = $_POST['CD_Equipamento'];
-                $nmEquipamento = $_POST['NM_Equipamento'];
+                $idChave = $_POST['CD_Chave'];
+                $nmChave = $_POST['NM_Chave'];
 
-                if( is_numeric( $idEquipamento ) && intval( $idEquipamento ) > 0 )
+                if( is_numeric( $idChave ) && intval( $idChave ) > 0 )
                 {
-                    if( !is_null( $nmEquipamento ) && strlen( $nmEquipamento ) > 0 )
+                    if( !is_null( $nmChave ) && strlen( $nmChave ) > 0 )
                     {
                         $varToSend = array( );
 
-                        $originValues = $equipamento->ReadEquipamento( $idEquipamento, null );
+                        $originValues = $chave->ReadChave( $idChave, null, null );
 
-                        if( $originValues[0]['NM_Equipamento'] != $nmEquipamento )
-                            $varToSend['NM_Equipamento'] = $nmEquipamento;
+                        if( $originValues[0]['NM_Chave'] != $nmChave )
+                            $varToSend['NM_Chave'] = $nmChave;
 
                         if( sizeof( $varToSend ) > 0 )
-                            if( $equipamento->UpdateEquipamento( $idEquipamento, $varToSend ) )
+                            if( $Chave->UpdateChave( $idChave, $varToSend ) )
                                 echo "<script> alert('Atualizado com sucesso'); </script>";
                     }
                 }
             }
             else if( array_key_exists( "Save", $_POST ) )
             {
-                $nome = $_POST['NM_Equipamento_Add'];
+                $nome = $_POST['NM_Chave_Add'];
 
-                if( !is_null( $nome ) && strlen( $nome ) > 3 && !is_numeric( $nome ) )
+                if( !is_null( $nome ) && strlen( $nome ) > 2 && !is_numeric( $nome ) )
                 {
-                    if( $equipamento->CreateEquipamento( $nome ) )
+                    if( $chave->CreateChave( $nome ) )
                         echo "
-                            <script> 
-                                alert('Cadastrado com sucesso'); 
-                                window.top.location.href = window.top.location.protocol +'//'+ window.top.location.host + window.top.location.pathname + window.top.location.search;
-                            </script>
-                            ";
+                              <script> 
+                                  alert('Cadastrado com sucesso'); 
+                                  window.top.location.href = window.top.location.protocol +'//'+ window.top.location.host + window.top.location.pathname + window.top.location.search;
+                              </script>
+                             ";
                     else
-                        echo "<script> alert('Não foi possível cadastrar'); </script>";
+                        echo "<script> alert('Não foi possível inserir no banco'); </script>";
                 }
                 else
-                    echo "<script> alert('Não foi possível cadastrar'); </script>";
+                    echo "<script> alert('Nome inválido'); </script>";
             }
-
+            
             if( $usuario->getUserAccess() != "Offline")
             {
         ?>
@@ -80,29 +80,18 @@
                 <ul class="list-unstyled components">
                     <li>
                         <a href="room-requests.php"><i class="fa fa-key fa-1x" aria-hidden="true"></i>  Requisicoes de sala</a> <!-- Tava nesse <a> -> data-toggle="collapse" aria-expanded="false" -->
-                        <!--<ul class="collapse list-unstyled" id="homeSubmenu">
-                            <li><a href="#">Home 1</a></li>
-                            <li><a href="#">Home 2</a></li>
-                            <li><a href="#">Home 3</a></li>
-                        </ul>-->
                     </li>
                     <li>
                         <a href="equipment-requests.php"><i class="fa fa-microchip fa-1x" aria-hidden="true"></i>  Req. de equipamento</a>
-                        <!--<a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false">Pages</a>
-                        <ul class="collapse list-unstyled" id="pageSubmenu">
-                            <li><a href="#">Page 1</a></li>
-                            <li><a href="#">Page 2</a></li>
-                            <li><a href="#">Page 3</a></li>
-                        </ul>-->
                     </li>
                     <li>
                         <a href="requesters.php"><i class="fa fa-id-card-o fa-1x" aria-hidden="true"></i>  Requisitantes</a>
                     </li>
-                    <li>
-                        <a href="keys.php"><i class="fa fa-lock fa-1x" aria-hidden="true"></i>  Labs / Salas</a>
-                    </li>
                     <li class="active">
-                        <a href="#"><i class="fa fa-wrench fa-1x" aria-hidden="true"></i>  Equipamentos</a>
+                        <a href="#"><i class="fa fa-lock fa-1x" aria-hidden="true"></i>  Labs / Salas</a>
+                    </li>
+                    <li>
+                        <a href="equipments.php"><i class="fa fa-wrench fa-1x" aria-hidden="true"></i>  Equipamentos</a>
                     </li>
                     <li>
                         <a href="historic-keys.php"><i class="fa fa-book fa-1x" aria-hidden="true"></i>  Histórico de salas</a>
@@ -143,9 +132,9 @@
                     </div>
                 </nav>
                 <?php
-                    $equipamentos = $equipamento->ReadEquipamento( );
+                    $chaves = $chave->ReadChave();
 
-                    if( is_array( $equipamentos ) )
+                    if( is_array( $chaves ) )
                     { ?>
                         <table class="table table-striped table-hover">
                             <thead class="thead-dark">
@@ -158,20 +147,20 @@
                             </thead>
                             <tbody>
                             <?php        
-                            $table = ""; // Variável que exibirá a tabela
-            
-                            foreach( $equipamentos as $key => $value )
-                            {
-                                $table .= "<tr>";
-                                $table .= "<td>".$value['CD_Equipamento']."</td>";
-                                $table .= "<td>".utf8_decode($value['NM_Equipamento'])."</td>";
-                                $table .= "<td><button type='button' onClick='EditModalChange(".$value['CD_Equipamento'].")' data-toggle='modal' data-target='#editModal' class='btn btn-success btn-sm'><span class='fa fa-edit'></span></button></td>";
-                                $table .= "<td><button type='button' onClick='DeleteEquipment(".$value['CD_Equipamento'].")' class='btn btn-danger btn-sm'><span class='fa fa-trash-o'></span></button></td>";
-                                $table .= "</tr>";
-                            }
-            
-                            echo $table;
-                        ?>
+                                $table = ""; // Variável que exibirá a tabela
+                
+                                foreach( $chaves as $key => $value )
+                                {
+                                    $table .= "<tr>";
+                                    $table .= "<td>".$value['CD_Chave']."</td>";
+                                    $table .= "<td>".utf8_decode($value['NM_Chave'])."</td>";
+                                    $table .= "<td><button type='button' onClick='EditModalChange(".$value['CD_Chave'].")' data-toggle='modal' data-target='#editModal' class='btn btn-success btn-sm'><span class='fa fa-edit'></span></button></td>";
+                                    $table .= "<td><button type='button' onClick='DeleteRequester(".$value['CD_Chave'].")' class='btn btn-danger btn-sm'><span class='fa fa-trash-o'></span></button></td>";
+                                    $table .= "</tr>";
+                                }
+                
+                                echo $table;
+                            ?>
                             </tbody>
                         </table>
                     <div class="modal fade" id="editModal" role="dialog" aria-labelledby="exampleModalLabel">
@@ -179,25 +168,23 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">Editar equipamento</h4>
+                                    <h4 class="modal-title">Editar Lab. / Sala</h4>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="" method="POST" id="formEdit">
-                                        <input type="hidden" value="" name="CD_Equipamento" id="CD_Equipamento">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <form role="form" id="validator" method="POST" action="#">
-                                                    <div class="form-group has-feedback">
-                                                        <label for="NM_Equipamento"><strong>Nome</strong></label>
-                                                        <input type="text" name="NM_Equipamento" id="NM_Equipamento" class="form-control"  placeholder="Digite o nome do equipamento" required />
-                                                    </div>
-                                                    <div class="form-group text-center">
-                                                        <button class="btn btn-success" type="submit" title="Salvar" name="Edit">Salvar</button>
-                                                    </div>
-                                                </form>
-                                            </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <form role="form" id="validator" method="POST" action="#">
+                                                <input type="hidden" value="" name="CD_Chave" id="CD_Chave">
+                                                <div class="form-group has-feedback">
+                                                    <label for="NM_Chave"><strong>Nome</strong></label>
+                                                    <input type="text" name="NM_Chave" id="NM_Chave" class="form-control"  placeholder="Digite o nome do lab / sala" required />
+                                                </div>
+                                                <div class="form-group text-center">
+                                                    <button class="btn btn-success" type="submit" title="Salvar" name="Edit">Salvar</button>
+                                                </div>
+                                            </form>
                                         </div>
-                                    </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -205,33 +192,32 @@
                 <?php } else { // Fim do IF IsArray() ?>
                     <div class="jumbotron">
                         <h1 class="display-3">Sistema de chaves</h1>
-                        <p class="lead">Ainda não há nenhum equipamento cadastrado</p>
+                        <p class="lead">Ainda não há nenhum requisitantes cadastrado</p>
                         <hr class="my-4">
                     </div>
                 <?php } // Fim do else ?>
-                <br><br><br><br>
                 <footer>
                     <div class="col-md-12 text-right">
-                        <button type="button" id="button-glyphicon" class="btn btn-circle btn-xl" data-toggle="modal" data-target="#novoEquipamento"><i class="glyphicon glyphicon-plus"></i></button><!-- Em class: novoEquipamento -->
+                        <button type="button" id="button-glyphicon" class="btn btn-circle btn-xl" data-toggle="modal" data-target="#novoRequisitante"><i class="glyphicon glyphicon-plus"></i></button><!-- Em class: novoRequisitante -->
                     </div>
                     <div class="container">
 				        <p class="copyright">&copy; 2018. Desenvolvido por <a href="https://github.com/marcelowzd">Marcelo Henrique</a></p>
-			        </div>
+				    </div>
                 </footer>
-                <div class="modal fade" id="novoEquipamento" role="dialog">
+                <div class="modal fade" id="novoRequisitante" role="dialog">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Novo equipamento</h4>
+                                <h4 class="modal-title">Novo Lab. / Sala</h4>
                             </div>
                             <div class="modal-body">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <form role="form" id="validator" method="POST" action="#">
                                             <div class="form-group has-feedback">
-                                                <label for="NM_Equipamento_Add"><strong>Nome</strong></label>
-                                                <input type="text" name="NM_Equipamento_Add" id="NM_Equipamento_Add" class="form-control"  placeholder="Digite o nome do equipamento" required />
+                                                <label for="NM_Chave_Add"><strong>Nome</strong></label>
+                                                <input type="text" name="NM_Chave_Add" id="NM_Chave_Add" class="form-control"  placeholder="Digite o nome do Lab. / Sala" required />
                                             </div>
                                             <div class="form-group text-center">
                                                 <button class="btn btn-success" type="submit" title="Salvar" name="Save">Salvar</button>
@@ -272,7 +258,7 @@
             {
                 var xhttp = generateXMLHttp();
 
-                xhttp.open("GET", "Ajax.php?CD_Equipamento_Edit=" + index, true);
+                xhttp.open("GET", "Ajax.php?CD_Chave_Edit=" + index, true);
                 xhttp.onreadystatechange = function()
                 {
                     if (xhttp.readyState == 4)
@@ -281,21 +267,21 @@
                         {
                             var response = JSON.parse(xhttp.responseText);
 
-                            var idEquipamento = document.getElementById('CD_Equipamento');
-                            var nmEquipamento = document.getElementById('NM_Equipamento');
+                            var idChave = document.getElementById('CD_Chave');
+                            var nmChave = document.getElementById('NM_Chave');
 
-                            idEquipamento.value = index;
-                            nmEquipamento.value = response[0]['NM_Equipamento'];
+                            idChave.value = index;
+                            nmChave.value = response[0]['NM_Chave'];
                         }
                     }			
                 };
                 xhttp.send();
             }
-            function DeleteEquipment( index )
+            function DeleteRequester( index )
             {
                 var xhttp = generateXMLHttp();
 
-                xhttp.open("GET", "Ajax.php?CD_Equipamento_Del=" + index, true);
+                xhttp.open("GET", "Ajax.php?CD_Chave_Del=" + index, true);
                 xhttp.onreadystatechange = function()
                 {
                     if (xhttp.readyState == 4)

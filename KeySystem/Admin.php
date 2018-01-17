@@ -85,8 +85,10 @@
                     NM_Chave VARCHAR(50) NOT NULL,
                     NM_Requisitante VARCHAR(50) NOT NULL,
                     NM_Usuario VARCHAR(50) NOT NULL,
-                    DT_Completa DATE NOT NULL,
-                    DT_Horario DATETIME NOT NULL
+                    DT_Completa_Recebida DATE NOT NULL,
+                    DT_Horario_Recebido TIME NOT NULL,
+                    DT_Completa_Entrega DATE NOT NULL,
+                    DT_Horario_Entrega TIME NOT NULL
                 )";
 
         if( mysqli_query( $conn, $sql ) ) echo "<p> Tabela HistoricoChave criada com sucesso </p>";
@@ -98,8 +100,10 @@
                     NM_Equipamento VARCHAR(50) NOT NULL,
                     NM_Requisitante VARCHAR(50) NOT NULL,
                     NM_Usuario VARCHAR(50) NOT NULL,
-                    DT_Completa DATE NOT NULL,
-                    DT_Horario DATETIME NOT NULL
+                    DT_Completa_Recebida DATE NOT NULL,
+                    DT_Horario_Recebido TIME NOT NULL,
+                    DT_Completa_Entrega DATE NOT NULL,
+                    DT_Horario_Entrega TIME NOT NULL
                 )";
 
         if( mysqli_query( $conn, $sql ) ) echo "<p> Tabela HistoricoEquipamento criada com sucesso </p>";

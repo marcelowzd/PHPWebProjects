@@ -102,14 +102,35 @@
 
         public function DeleteRequisicaoSala( $index )
         {
-            $stmt = $this->conn->prepare( "DELETE FROM RequisicaoSala WHERE CD_Requisicao_Sala = ?" );
-            $stmt->bind_param( "i", $index );
+            $historico = new HistoricoChave( );
 
-            $return = ( $stmt->execute() == false ? false : true );
-            
-            $stmt->close();
-            
-            return $return;
+            $values = $this->ReadRequisicaoSala( $index );
+
+            if( is_array( $values ) )
+            {
+                if( $historico->CreateHistoricoChave( 
+                                                        $values[0]['NM_Chave'], 
+                                                        $values[0]['NM_Requisitante'],
+                                                        $_SESSION['NM_Usuario'],
+                                                        $values[0]['DT_Completa'],
+                                                        $values[0]['DT_Horario'],
+                                                        date("Y-m-d"), 
+                                                        date("H:i:s") 
+                                                    )
+                )
+                {
+                    $return = null;
+
+                    $stmt = $this->conn->prepare( "DELETE FROM RequisicaoSala WHERE CD_Requisicao_Sala = ?" );
+                    $stmt->bind_param( "i", $index );
+
+                    $return = ( $stmt->execute() == false ? false : true );
+                    
+                    $stmt->close();
+                    
+                    return $return;
+                }
+            }
         }
     }
 ?>

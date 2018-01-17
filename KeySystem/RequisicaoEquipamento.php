@@ -102,14 +102,33 @@
 
         public function DeleteRequisicaoEquipamento( $index )
         {
-            $stmt = $this->conn->prepare( "DELETE FROM RequisicaoEquipamento WHERE CD_Requisicao_Equipamento = ?" );
-            $stmt->bind_param( "i", $index );
+            $historico = new HistoricoEquipamento( );
+            
+            $values = $this->ReadRequisicaoEquipamento( $index );
 
-            $return = ( $stmt->execute() == false ? false : true );
-            
-            $stmt->close();
-            
-            return $return;
+            if( is_array( $values ) )
+            {
+                if( $historico->CreateHistoricoEquipamento( 
+                                                        $values[0]['NM_Equipamento'], 
+                                                        $values[0]['NM_Requisitante'],
+                                                        $_SESSION['NM_Usuario'],
+                                                        $values[0]['DT_Completa'],
+                                                        $values[0]['DT_Horario'],
+                                                        date("Y-m-d"), 
+                                                        date("H:i:s") 
+                                                    )
+                )
+                {
+                    $stmt = $this->conn->prepare( "DELETE FROM RequisicaoEquipamento WHERE CD_Requisicao_Equipamento = ?" );
+                    $stmt->bind_param( "i", $index );
+
+                    $return = ( $stmt->execute() == false ? false : true );
+                    
+                    $stmt->close();
+                    
+                    return $return;
+                }
+            }
         }
     }
 ?>

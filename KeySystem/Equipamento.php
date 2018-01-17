@@ -21,7 +21,7 @@
             return $return;
         }
         
-        public function ReadEquipamento( $index = null, $nome = null )
+        public function ReadEquipamento( $index = null, $nome = null, $filterByInUse = null )
         {
             $stmt = null;
 
@@ -37,6 +37,8 @@
                 $stmt = $this->conn->prepare( "SELECT * FROM Equipamento WHERE NM_Equipamento LIKE ?" );
                 $stmt->bind_param( "s", $nome );
             }
+            else if( $filterByInUse )
+                $stmt = $this->conn->prepare( "SELECT * FROM Equipamento WHERE CD_Equipamento NOT IN ( SELECT CD_Equipamento FROM RequisicaoEquipamento )");
             else
                 $stmt = $this->conn->prepare( "SELECT * FROM Equipamento" );
             

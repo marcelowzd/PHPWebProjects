@@ -25,6 +25,7 @@
             require 'Chave.php';
             require 'RequisicaoSala.php';
             require 'Usuario.php';
+            require 'HistoricoChave.php';
     
             $requisitante = new Requisitante();
             $requisicaoSala = new RequisicaoSala();
@@ -93,10 +94,6 @@
                     <h3><center>Sistema de Chaves</center></h3>
                 </div>
                 <ul class="list-unstyled components">
-                    <!--<p>Dummy Heading</p>-->
-                    <li>
-                        <a href="#"><i class="fa fa-home fa-1x"></i>  Home</a>
-                    </li>
                     <li class="active">
                         <a href="#"><i class="fa fa-key fa-1x" aria-hidden="true"></i>  Requisicoes de sala</a> <!-- Tava nesse <a> -> data-toggle="collapse" aria-expanded="false" -->
                         <!--<ul class="collapse list-unstyled" id="homeSubmenu">
@@ -118,7 +115,16 @@
                         <a href="requesters.php"><i class="fa fa-id-card-o fa-1x" aria-hidden="true"></i>  Requisitantes</a>
                     </li>
                     <li>
-                        <a href="equipments.php"><i class="fa fa-microphone fa-1x" aria-hidden="true"></i>  Equipamentos</a>
+                        <a href="keys.php"><i class="fa fa-lock fa-1x" aria-hidden="true"></i>  Labs / Salas</a>
+                    </li>
+                    <li>
+                        <a href="equipments.php"><i class="fa fa-wrench fa-1x" aria-hidden="true"></i>  Equipamentos</a>
+                    </li>
+                    <li>
+                        <a href="historic-keys.php"><i class="fa fa-book fa-1x" aria-hidden="true"></i>  Histórico de salas</a>
+                    </li>
+                    <li>
+                        <a href="historic-equipments.php"><i class="fa fa fa-laptop fa-1x" aria-hidden="true"></i>  Hist. de equipamentos</a>
                     </li>
                         <?php
                             if( $usuario->getUserAccess() == "Admin" ){ 

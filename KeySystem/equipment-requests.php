@@ -5,13 +5,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-        <title>Index</title>
+        <title>Requisições de equipamento</title>
 
-        <!-- Bootstrap CSS CDN -->
+        
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <!-- Our Custom CSS -->
+      
         <link rel="stylesheet" href="style.css">
-        <!-- Scrollbar Custom CSS -->
+
+        <link rel="stylesheet" href="glyphicons.css">
+        
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -25,6 +27,7 @@
             require 'Equipamento.php';
             require 'RequisicaoEquipamento.php';
             require 'Usuario.php';
+            require 'HistoricoEquipamento.php';
     
             $requisitante = new Requisitante();
             $requisicaoEquipamento = new RequisicaoEquipamento();
@@ -91,11 +94,7 @@
                     <h3><center>Sistema de Chaves</center></h3>
                 </div>
                 <ul class="list-unstyled components">
-                    <!--<p>Dummy Heading</p>-->
-                    <li>
-                        <a href="#"><i class="fa fa-home fa-1x"></i>  Home</a>
-                    </li>
-                    <li>
+                    <li><!-- glyphicon glyphicon-user-key fa fa-key fa-1x -->
                         <a href="room-requests.php"><i class="fa fa-key fa-1x" aria-hidden="true"></i>  Requisicoes de sala</a>
                     </li>
                     <li class="active">
@@ -105,7 +104,16 @@
                         <a href="requesters.php"><i class="fa fa-id-card-o fa-1x" aria-hidden="true"></i>  Requisitantes</a>
                     </li>
                     <li>
-                        <a href="equipments.php"><i class="fa fa-microphone fa-1x" aria-hidden="true"></i>  Equipamentos</a>
+                        <a href="keys.php"><i class="fa fa-lock fa-1x" aria-hidden="true"></i>  Labs / Salas</a>
+                    </li>
+                    <li>
+                        <a href="equipments.php"><i class="fa fa-wrench fa-1x" aria-hidden="true"></i>  Equipamentos</a>
+                    </li>
+                    <li>
+                        <a href="historic-keys.php"><i class="fa fa-book fa-1x" aria-hidden="true"></i>  Histórico de salas</a>
+                    </li>
+                    <li>
+                        <a href="historic-equipments.php"><i class="fa fa fa-laptop fa-1x" aria-hidden="true"></i>  Hist. de equipamentos</a>
                     </li>
                         <?php
                             if( $usuario->getUserAccess() == "Admin" ){ 
