@@ -1,7 +1,0 @@
-//1. Adicionar controle de usuário
-2. Adicionar controle de usuário as tabelas de histórico
-3. Criar histórico para requisições de equipamento
-4. Criar histórico para requisições de chave
-5. Criar página da TV
-6. Adicionar controle de usuário as páginas em geral (se não estiver logado, redirecionar para login)
-7. Adicionar algum número no equipamento (Não lembro o que é)
