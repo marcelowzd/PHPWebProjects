@@ -27,20 +27,20 @@
 
             if( $index )
             {
-                $stmt = $this->conn->prepare( "SELECT * FROM Requisitante WHERE CD_Requisitante = ?" );
+                $stmt = $this->conn->prepare( "SELECT * FROM Requisitante WHERE CD_Requisitante = ? ORDER BY NM_Requisitante" );
                 $stmt->bind_param( "i", $index );
             }
             else if( $nome )
             {
                 $nome = "%".$nome."%";
 
-                $stmt = $this->conn->prepare( "SELECT * FROM Requisitante WHERE NM_Requisitante LIKE ?" );
+                $stmt = $this->conn->prepare( "SELECT * FROM Requisitante WHERE NM_Requisitante LIKE ? ORDER BY NM_Requisitante" );
                 $stmt->bind_param( "s", $nome );
             }
             else if( $filterByInRoom )
-                $stmt = $this->conn->prepare( "SELECT * FROM Requisitante WHERE CD_Requisitante NOT IN ( SELECT CD_Requisitante FROM RequisicaoSala )");
+                $stmt = $this->conn->prepare( "SELECT * FROM Requisitante WHERE CD_Requisitante NOT IN ( SELECT CD_Requisitante FROM RequisicaoSala ) ORDER BY NM_Requisitante");
             else
-                $stmt = $this->conn->prepare( "SELECT * FROM Requisitante" );
+                $stmt = $this->conn->prepare( "SELECT * FROM Requisitante ORDER BY NM_Requisitante" );
             
             $stmt->execute();
             $stmt->store_result();

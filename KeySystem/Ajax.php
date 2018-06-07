@@ -8,6 +8,7 @@
     require 'Chave.php';
     require 'HistoricoChave.php';
     require 'HistoricoEquipamento.php';
+    require 'ReservaChave.php';
 
     session_start();
 
@@ -149,6 +150,82 @@
 
             if( $chave->DeleteChave( $idChave ) )
                 echo "Deletado";
+        }
+    }
+
+    if( array_key_exists( 'CD_Usuario_Edit', $_GET ) )
+    {
+        $idUsuario = $_GET['CD_Usuario_Edit'];
+
+        if( is_numeric( $idUsuario ) && intval( $idUsuario ) > 0 )
+        {
+            $usuario = new Usuario( );
+
+            $usuarios = $usuario->ReadUsuario( $idUsuario, null, null );
+
+            if( is_array( $usuarios ) )
+            { echo json_encode( $usuarios ); }
+        }
+    }
+
+    if( array_key_exists( 'CD_Usuario_Del', $_GET ) )
+    {
+        $idUsuario = $_GET['CD_Usuario_Del'];
+
+        if( is_numeric( $idUsuario ) && intval( $idUsuario ) > 0 )
+        {
+            $usuario = new Usuario( );
+
+            if( $usuario->DeleteUsuario( $idUsuario ) )
+                echo "<script> alert('Usuario deletado'); </script>";
+        }
+    }
+
+    if( array_key_exists( 'CD_Reserva_Chave_Con', $_GET ) )
+    {
+        $idReservaChave = $_GET['CD_Reserva_Chave_Con'];
+
+        if( is_numeric( $idReservaChave ) && intval( $idReservaChave ) )
+        {
+            $reservaChave = new ReservaChave( );
+            $requisicaoSala = new RequisicaoSala( );
+
+            $result = $reservaChave->ReadReservaChave( $idReservaChave );
+
+            if( $requisicaoSala->CreateRequisicaoSala( $result[ 0 ][ 'CD_Chave' ], $result[ 0 ][ 'CD_Requisitante' ],
+                $result[ 0 ][ 'DT_Completa' ], $result[ 0 ][ 'DT_Horario_Comeco' ]
+            ) )
+            {
+                $reservaChave->DeleteReservaChave( $idReservaChave );
+            }
+        }
+    }
+
+    if( array_key_exists( 'CD_Reserva_Chave_Edit', $_GET ) )
+    {
+        $idReservaChave = $_GET['CD_Reserva_Chave_Edit'];
+
+        if( is_numeric( $idReservaChave ) && intval( $idReservaChave ) > 0 )
+        {
+            $reservaChave = new ReservaChave( );
+
+            $reservasChave = $reservaChave->ReadReservaChave( $idReservaChave, null, null );
+
+            if( is_array( $reservasChave ) )
+            { echo json_encode( $reservasChave ); }
+        }
+    }
+
+    if( array_key_exists( 'CD_Reserva_Chave_Del', $_GET ) )
+    {
+        $idReservaChave = $_GET['CD_Reserva_Chave_Del'];
+
+        if( is_numeric( $idReservaChave ) && intval( $idReservaChave ) > 0 )
+        {
+            $reservaChave = new ReservaChave( );
+
+            if( $reservaChave->DeleteReservaChave( $idReservaChave ) )
+                echo "<script> alert('Reserva de chave deletada'); </script>";
         }
     }
 ?>

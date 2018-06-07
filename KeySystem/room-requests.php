@@ -1,7 +1,9 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="iso-8859-1">
+        <!--<meta charset="iso-8859-1">-->
+        <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
@@ -10,16 +12,16 @@
         <!-- Bootstrap CSS CDN -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <!-- Our Custom CSS -->
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="assets/CSS/style.css">
         <!-- Scrollbar Custom CSS -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
 
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+    
+        <link rel="icon" href="assets/ICOs/key.ico">
     </head>
     <body>
         <?php
-            session_start();
-
             require 'Connection.php';
             require 'Requisitante.php';
             require 'Chave.php';
@@ -65,10 +67,62 @@
             }
             else if( array_key_exists( "Save", $_POST ) )
             {
-                $idChave = $_POST['CD_Chave_Add'];
                 $idRequisitante = $_POST['CD_Requisitante_Add'];
+                $idChave = $_POST['CD_Chave_Add'];
 
-                if( is_numeric( $idChave ) && intval( $idChave ) > 0 )
+                if( is_numeric( $idRequisitante ) && intval( $idRequisitante ) > 0 )
+                {
+                    $falha = false;
+                    $erro = null;
+                    $tempArray = array();
+
+                    foreach( $idChave as $key => $value )
+                    {
+                        if( is_numeric( $value ) && intval( $value ) > 0 )
+                        {
+                            if( !in_array( $value, $tempArray ) )
+                                $tempArray[] = $value;
+                            else // Se o valor for repetido, então temos chaves duplicadas
+                            {
+                                $falha = true;
+    
+                                $erro = "<script> alert('Chaves duplicadas'); </script>";
+    
+                                break;
+                            } 
+                        }
+                        else // Valor inválido
+                        {
+                            $falha = true;
+
+                            $erro = "<script> alert('Número inválido para chave'); </script>";
+
+                            break;
+                        }
+                    }
+
+                    if( !$falha )
+                    {
+                        foreach( $idChave as $key => $value )
+                        {
+                            if( $requisicaoSala->CreateRequisicaoSala( $value, $idRequisitante, date("Y-m-d"), date("H:i:s") ) )
+                                continue;
+                            else
+                                break;
+                        }
+
+                        echo "<script> 
+                                alert('Cadastrado com sucesso'); 
+                                window.top.location.href = window.top.location.protocol +'//'+ window.top.location.host + window.top.location.pathname + window.top.location.search;
+                              </script>";
+                    }
+                    else
+                        echo $erro;
+                }
+                else
+                    echo "<script> alert('Número inválido para requisitante'); </script>";
+
+                /*if( is_numeric( $idChave ) && intval( $idChave ) > 0 )
                     if( is_numeric( $idRequisitante ) && intval( $idRequisitante ) > 0 )
                         if( $requisicaoSala->CreateRequisicaoSala( $idChave, $idRequisitante, date("Y-m-d"), date("H:i:s") ) )
                             echo "
@@ -82,63 +136,17 @@
                     else
                         echo "<script> alert('Número inválido para requisitante'); </script>";
                 else
-                    echo "<script> alert('Número inválido para chave'); </script>";
+                    echo "<script> alert('Número inválido para chave'); </script>";*/
             }
 
             if( $usuario->getUserAccess() != "Offline")
             {
+                $requisitantes = $requisitante->ReadRequisitante(null, null, null);
+
+                $selectRequisitantes = array();
         ?>
         <div class="wrapper">
-            <nav id="sidebar">
-                <div class="sidebar-header">
-                    <h3><center>Sistema de Chaves</center></h3>
-                </div>
-                <ul class="list-unstyled components">
-                    <li class="active">
-                        <a href="#"><i class="fa fa-key fa-1x" aria-hidden="true"></i>  Requisicoes de sala</a> <!-- Tava nesse <a> -> data-toggle="collapse" aria-expanded="false" -->
-                        <!--<ul class="collapse list-unstyled" id="homeSubmenu">
-                            <li><a href="#">Home 1</a></li>
-                            <li><a href="#">Home 2</a></li>
-                            <li><a href="#">Home 3</a></li>
-                        </ul>-->
-                    </li>
-                    <li>
-                        <a href="equipment-requests.php"><i class="fa fa-microchip fa-1x" aria-hidden="true"></i>  Req. de equipamento</a>
-                        <!--<a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false">Pages</a>
-                        <ul class="collapse list-unstyled" id="pageSubmenu">
-                            <li><a href="#">Page 1</a></li>
-                            <li><a href="#">Page 2</a></li>
-                            <li><a href="#">Page 3</a></li>
-                        </ul>-->
-                    </li>
-                    <li>
-                        <a href="requesters.php"><i class="fa fa-id-card-o fa-1x" aria-hidden="true"></i>  Requisitantes</a>
-                    </li>
-                    <li>
-                        <a href="keys.php"><i class="fa fa-lock fa-1x" aria-hidden="true"></i>  Labs / Salas</a>
-                    </li>
-                    <li>
-                        <a href="equipments.php"><i class="fa fa-wrench fa-1x" aria-hidden="true"></i>  Equipamentos</a>
-                    </li>
-                    <li>
-                        <a href="historic-keys.php"><i class="fa fa-book fa-1x" aria-hidden="true"></i>  Histórico de salas</a>
-                    </li>
-                    <li>
-                        <a href="historic-equipments.php"><i class="fa fa fa-laptop fa-1x" aria-hidden="true"></i>  Hist. de equipamentos</a>
-                    </li>
-                        <?php
-                            if( $usuario->getUserAccess() == "Admin" ){ 
-                        ?>
-                    <li>
-                        <a href="users.php"><i class="fa fa-user-o fa-1x" aria-hidden="true"></i> Usuários </a>
-                    </li>
-                        <?php } ?>
-                </ul>
-                <!--<ul class="list-unstyled CTAs">
-                    <li><a href="https://bootstrapious.com/tutorial/files/sidebar.zip" class="download">Download source</a></li>
-                    <li><a href="https://bootstrapious.com/p/bootstrap-sidebar" class="article">Back to article</a></li>
-                </ul>-->
-            </nav>
+            <?php include_once('assets/Prefabs/sidebar.php'); ?>
             <div id="content">
                 <nav class="navbar navbar-default">
                     <div class="container-fluid">
@@ -168,8 +176,8 @@
                             <tr>
                                 <th>Requisitante</th>
                                 <th>Sala</th>
-                                <th>Data</th>
-                                <th>Horário</th>
+                                <!--<th>Data</th>
+                                <th>Horário</th>-->
                                 <th>Editar</th>
                                 <th>Devolver</th>
                             </tr>
@@ -177,58 +185,77 @@
                         <tbody>
                         <?php        
                             $table = ""; // Variável que exibirá a tabela
+                            $selectChaves = array();
+                            $count = 0;
             
                             foreach( $requisicoesSala as $key => $value )
                             {
                                 $date = new DateTime($value['DT_Completa']);
 
                                 $table .= "<tr>";
-                                $table .= "<td>".utf8_decode($value['NM_Requisitante'])."</td>";
-                                $table .= "<td>".utf8_decode($value['NM_Chave'])."</td>";
-                                $table .= "<td>".$date->format('d/m/Y')."</td>";
-                                $table .= "<td>".$value['DT_Horario']."</td>";
-                                $table .= "<td><button type='button' onClick='EditModalChange(".$value['CD_Requisicao_Sala'].")' data-toggle='modal' data-target='#editModal' class='btn btn-success btn-sm'><span class='fa fa-edit'></span></button></td>";
-                                $table .= "<td><button type='button' onClick='DeleteRoomRequest(".$value['CD_Requisicao_Sala'].")' class='btn btn-danger btn-sm'><span class='fa fa-repeat'></span></button></td>";
+                                $table .= "<td onmouseout='RemoveThis()' onmouseover='ShowInformation(".$value['CD_Requisicao_Sala'].")'>".$value['NM_Requisitante']."</td>";
+                                $table .= "<td onmouseout='RemoveThis()' onmouseover='ShowInformation(".$value['CD_Requisicao_Sala'].")'>".$value['NM_Chave']."</td>";
+                                //$table .= "<td>".$date->format('d/m/Y')."</td>";
+                                //$table .= "<td>".$value['DT_Horario']."</td>";
+                                $table .= "<td><button type='button' onClick='EditModalChange(".$value['CD_Requisicao_Sala'].")' data-toggle='modal' data-target='#editModal' class='btn btn-success btn-sm'><span class='fas fa-edit 1x'></span></button></td>";
+                                $table .= "<td><button type='button' onClick='DeleteRoomRequest(".$value['CD_Requisicao_Sala'].")' class='btn btn-danger btn-sm'><span class='fas fa-redo 1x'></span></button></td>";
                                 $table .= "</tr>";
+                            }
+
+                            foreach( $requisitantes as $key => $value )
+                            {
+                                $selectRequisitantes[ $count ] = $value['CD_Requisitante'];
+
+                                $count++;
                             }
             
                             echo $table;
                         ?>
                         </tbody>
-                    </table>
+                    </table><br><br><br><br>
+                    <div id="snackbar">
+                    </div>
                     <div class="modal fade" id="editModal" role="dialog" aria-labelledby="exampleModalLabel">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h4> Editar requisicao de sala </h4>
+                                    <h4> Editar requisição de sala </h4>
                                 </div>
                                 <div class="modal-body">
                                     <form action="" method="POST" id="formEdit">
                                         <input type="hidden" value="" name="CD_Requisicao_Sala" id="CD_Requisicao_Sala">
                                         <div class="form-group has-feedback">
-                                            <label for="CD_Requisitante"><strong>Requisitante</strong></label>
-                                            <select name="CD_Requisitante" id="CD_Requisitante">
-                                            <?php
-                                                $requisitantes = $requisitante->ReadRequisitante(null, null, true);
+                                            <label for="CD_Requisitante" class="custom-select">
+                                                <select name="CD_Requisitante" id="CD_Requisitante">
+                                                <?php
+                                                    //$requisitantes = $requisitante->ReadRequisitante(null, null, null); // BEFORE UPDATE NULL NULL TRUE
 
-                                                foreach( $requisitantes as $value => $key )
-                                                    echo "<option index='".$key['CD_Requisitante']."' value='".$key['CD_Requisitante']."'>".$key['NM_Requisitante']."</option>";
-                                            ?>
-                                            </select>
+                                                    if( is_array( $requisitantes ) )
+                                                        foreach( $requisitantes as $value => $key )
+                                                            echo "<option index='".$key['CD_Requisitante']."' value='".$key['CD_Requisitante']."'>".$key['NM_Requisitante']."</option>";
+                                                    else
+                                                        echo "<option index='-1' value='-1' selected='true' disabled>Não há requisitantes disponíveis </option>";
+                                                ?>
+                                                </select>
+                                            </label>
                                         </div>
                                         <div class="form-group has-feedback">
-                                            <label for="CD_Chave"><strong>Sala</strong></label>
-                                            <select name="CD_Chave" id="CD_Chave">
-                                            <?php
-                                                $chaves = $chave->ReadChave(null, null, true);
+                                            <label for="CD_Chave" class="custom-select">
+                                                <select name="CD_Chave" id="CD_Chave">
+                                                <?php
+                                                    $chaves = $chave->ReadChave(null, null, true);
 
-                                                foreach( $chaves as $value => $key )
-                                                    echo "<option index='".$key['CD_Chave']."' value='".$key['CD_Chave']."'>".$key['NM_Chave']."</option>";
-                                            ?>
-                                            </select>
+                                                    if( is_array( $chaves ) )
+                                                        foreach( $chaves as $value => $key )
+                                                            echo "<option index='".$key['CD_Chave']."' value='".$key['CD_Chave']."'>".$key['NM_Chave']."</option>";
+                                                    else
+                                                        echo "<option index='-1' value='-1' selected='true' disabled>Não há requisitantes disponíveis </option>";
+                                                ?>
+                                                </select>
+                                            </label>
                                         </div>
                                         <div class="form-group text-center">
-                                            <button class="btn btn-success" type="submit" title="Salvar" name="Edit">Salvar</button>
+                                            <button class="btn btn-success" type="submit" title="Salvar" name="Edit">Salvar requisição</button>
                                         </div>
                                     </form>
                                 </div>
@@ -236,55 +263,72 @@
                         </div>
                     </div>
                 <?php   } else { // Fim do IF IsArray() ?>
-                    <div class="jumbotron">
-                        <h1 class="display-3">Sistema de chaves</h1>
-                        <p class="lead">Ainda não há nenhuma requisição de sala</p>
-                        <hr class="my-4">
+                    <div class="container-fluid">
+                        <div class="jumbotron">
+                            <h1 class="display-3">Sistema de chaves</h1>
+                            <p class="lead">Ainda não há nenhuma requisição de sala</p>
+                            <hr class="my-4">
+                        </div>
                     </div>
                 <?php } // Fim do else ?>
                 <footer>
                     <div class="col-md-12 text-right">
                         <button type="button" id="button-glyphicon" class="btn btn-circle btn-xl" data-toggle="modal" data-target="#novaRequisicaoSala"><i class="glyphicon glyphicon-plus"></i></button><!-- Em class: novoEquipamento -->
                     </div>
-                    <div class="container">
-						<p class="copyright">&copy; 2018. Desenvolvido por <a href="https://github.com/marcelowzd">Marcelo Henrique</a></p>
-					</div>
                 </footer>
+                <div class="footer">
+                    <div class="container">
+                        <p class="copyright">&copy; 2018. Desenvolvido por <a href="https://github.com/marcelowzd">Marcelo Henrique</a></p>
+                    </div>
+                </div>
                 <div class="modal fade" id="novaRequisicaoSala" role="dialog">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Novo requisição de sala</h4>
+                                <h4 class="modal-title">Nova requisição de sala</h4>
                             </div>
                             <div class="modal-body">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <form role="form" id="validator" method="POST" action="#">
+                                        <form role="form" method="POST" action="#">
                                             <div class="form-group has-feedback">
-                                                <label for="CD_Requisitante_Add"><strong>Requisitante</strong></label>
-                                                <select name="CD_Requisitante_Add" id="CD_Requisitante_Add">
-                                                <?php
-                                                    $requisitantes = $requisitante->ReadRequisitante(null, null, true);
+                                                <label for="CD_Requisitante_Add" class="custom-select">
+                                                    <select name="CD_Requisitante_Add" id="CD_Requisitante_Add">
+                                                    <?php
+                                                        //$requisitantes = $requisitante->ReadRequisitante(null, null, null); // BEFORE UPDATE NULL NULL TRUE
 
-                                                    foreach( $requisitantes as $value => $key )
-                                                        echo "<option index='".$key['CD_Requisitante']."' value='".$key['CD_Requisitante']."'>".$key['NM_Requisitante']."</option>";
-                                                ?>
-                                                </select>
+                                                        if( is_array( $requisitantes ) )
+                                                            foreach( $requisitantes as $value => $key )
+                                                                echo "<option index='".$key['CD_Requisitante']."' value='".$key['CD_Requisitante']."'>".$key['NM_Requisitante']."</option>";
+                                                        else
+                                                            echo "<option index='-1' value='-1' selected='true' disabled>Não há requisitantes disponíveis </option>";
+                                                    ?>
+                                                    </select>
+                                                </label>
                                             </div>
-                                            <div class="form-group has-feedback">
-                                                <label for="CD_Chave_Add"><strong>Sala</strong></label>
-                                                <select name="CD_Chave_Add" id="CD_Chave_Add">
-                                                <?php
-                                                    $chaves = $chave->ReadChave(null, null, true);
+                                            <div class="form-group" id="keysDiv">
+                                                <label for="CD_Chave_Add" class="custom-select">
+                                                    <select name="CD_Chave_Add[]" id="CD_Chave_Add">
+                                                    <?php
+                                                        $chaves = $chave->ReadChave(null, null, true);
 
-                                                    foreach( $chaves as $value => $key )
-                                                        echo "<option index='".$key['CD_Chave']."' value='".$key['CD_Chave']."'>".$key['NM_Chave']."</option>";
-                                                ?>
-                                                </select>
+                                                        if( is_array( $chaves ) )
+                                                            foreach( $chaves as $value => $key )
+                                                                echo "<option index='".$key['CD_Chave']."' value='".$key['CD_Chave']."'>".$key['NM_Chave']."</option>";
+                                                        else
+                                                            echo "<option index='-1' value='-1' selected='true' disabled>Não há salas disponíveis </option>";
+                                                    ?>
+                                                    </select>
+                                                </label>
                                             </div>
                                             <div class="form-group text-center">
-                                                <button class="btn btn-success" type="submit" title="Salvar" name="Save">Salvar</button>
+                                                <?php if( is_array( $chaves ) && sizeof( $chaves ) > 1 ){ ?>
+                                                <button class="btn btn-success" type="button" id="CloneObject" name="Clone">Mais salas</button>
+                                                <?php } ?>
+                                                <?php if( is_array( $chaves ) && sizeof( $chaves ) > 0 && is_array( $requisitantes ) && sizeof( $requisitantes ) > 0 ){ ?>
+                                                <button class="btn btn-success" type="submit" title="Salvar" name="Save">Criar requisição</button>
+                                                <?php } ?>
                                             </div>
                                         </form>
                                     </div>
@@ -298,7 +342,8 @@
 
 
         <!-- jQuery CDN -->
-        <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+        <!--<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>-->
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
         <!-- Bootstrap Js CDN -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <!-- jQuery Custom Scroller CDN -->
@@ -315,9 +360,59 @@
                     $('.collapse.in').toggleClass('in');
                     $('a[aria-expanded=true]').attr('aria-expanded', 'false');
                 });
+
+                var iTotal = <?php echo ( is_array( $chaves ) ? sizeof( $chaves ) : 0 ).";"; ?>
+                var iCount = 1;
+
+                $('#CloneObject').on('click', function () {
+                    if( iTotal > iCount )
+                    {
+                        $('#keysDiv').clone().insertAfter('#keysDiv');
+
+                        iCount++;
+                    }
+                    else
+                        alert('Limite maximo de chaves atingido');
+                });
             });
         </script>
         <script>
+            function RemoveThis( )
+            {
+                var snackBar = document.getElementById("snackbar");
+
+                snackBar.className = snackBar.className.replace("show", "");
+            }
+            function ShowInformation( index )
+            {
+                var xhttp = generateXMLHttp();
+
+                xhttp.open("GET", "Ajax.php?CD_Requisicao_Sala_Edit=" + index, true);
+                xhttp.onreadystatechange = function()
+                {
+                    if (xhttp.readyState == 4)
+                    {
+                        if (xhttp.status == 200)
+                        {
+                            var response = JSON.parse(xhttp.responseText);
+
+                            var snackBar = document.getElementById("snackbar");
+
+                            var splitDate = response[ 0 ][ 'DT_Completa' ].split("-");
+
+                            var actualDate = splitDate[ 2 ] + "/" + splitDate[ 1 ] + "/" + splitDate[ 0 ];
+
+                            snackBar.innerHTML = "Data: " + actualDate + " - Horário: " + response[ 0 ][ 'DT_Horario' ];
+
+                            snackBar.className = "show";
+
+                            //setTimeout(function(){ snackBar.className = snackBar.className.replace("show", ""); }, 3000);
+
+                        }
+                    }
+                };
+                xhttp.send();
+            }
             function EditModalChange( index )
             {
                 var xhttp = generateXMLHttp();
@@ -331,9 +426,27 @@
                         {
                             var response = JSON.parse(xhttp.responseText);
 
-                            //alert(response[0]['CD_Requisicao_Sala']);
 
                             var idRequisicaoSala = document.getElementById('CD_Requisicao_Sala');
+                            var idSelectRequisitante = document.getElementById('CD_Requisitante');
+                            var idSelectChave = document.getElementById('CD_Chave');
+
+                            //var keyIndexes = TEM PHP NESSA PARTE/*echo json_encode($selectChaves).";"*/
+                            var reqIndexes = <?php
+                                                echo 
+                                                    sizeof( $selectRequisitantes) > 0 ? 
+                                                    json_encode($selectRequisitantes).";" : "0;"
+                                              ?>
+                           
+                            for( var i = 0; i < reqIndexes.length; i++ )
+                            {
+                                if( reqIndexes[ i ] == response[ 0 ]['CD_Requisitante'] )
+                                {
+                                    idSelectRequisitante.selectedIndex = i;
+
+                                    break;
+                                }
+                            }
 
                             idRequisicaoSala.value = index;
                         }
@@ -379,7 +492,8 @@
             }
         </script>
         <?php } else {
-                header("Location: login-page.php");
+                echo "<script> window.location.replace('index.php'); </script>";
+                //header("Location: login-page.php");
             } ?>
     </body>
 </html>

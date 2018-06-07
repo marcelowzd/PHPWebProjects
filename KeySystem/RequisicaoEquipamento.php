@@ -38,6 +38,8 @@
             else
                 $sql .= "WHERE CD_Requisicao_Equipamento > 0";
 
+            $sql .= " ORDER BY R.NM_Requisitante";
+
             $stmt = $this->conn->prepare($sql);
             
             $stmt->execute();

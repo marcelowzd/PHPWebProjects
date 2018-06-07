@@ -13,7 +13,7 @@
         public function CreateUsuario( $nome, $login, $senha, $email, $acesso )
         {
             $stmt = $this->conn->prepare( "INSERT INTO Usuario VALUES (null, ?, ?, ?, ?, ?)" );
-            $stmt->bind_param( "sssss", $nome, $login, $senha, $email, $acesso );
+            $stmt->bind_param( "sssss", $nome, $email, $login, $senha, $acesso );
             
             $return = ( $stmt->execute() == false ? false : true );
 
@@ -28,25 +28,25 @@
 
             if( $index )
             {
-                $stmt = $this->conn->prepare( "SELECT * FROM Usuario WHERE CD_Usuario = ?" );
+                $stmt = $this->conn->prepare( "SELECT * FROM Usuario WHERE CD_Usuario = ? ORDER BY NM_Usuario" );
                 $stmt->bind_param( "i", $index );
             }
             else if( $nome )
             {
                 $nome = "%".$nome."%";
 
-                $stmt = $this->conn->prepare( "SELECT * FROM Usuario WHERE NM_Usuario LIKE ?" );
+                $stmt = $this->conn->prepare( "SELECT * FROM Usuario WHERE NM_Usuario LIKE ? ORDER BY NM_Usuario" );
                 $stmt->bind_param( "s", $nome );
             }
             else if( $email )
             {
                 $nome = "%".$nome."%";
 
-                $stmt = $this->conn->prepare( "SELECT * FROM Usuario WHERE DS_Email_Usuario LIKE ?" );
+                $stmt = $this->conn->prepare( "SELECT * FROM Usuario WHERE DS_Email_Usuario LIKE ? ORDER BY NM_Usuario" );
                 $stmt->bind_param( "s", $email );
             }
             else
-                $stmt = $this->conn->prepare( "SELECT * FROM Usuario" );
+                $stmt = $this->conn->prepare( "SELECT * FROM Usuario ORDER BY NM_Usuario" );
             
             $stmt->execute();
             $stmt->store_result();
@@ -101,7 +101,7 @@
                 return 0;
         }
 
-        public function DeleteEquipamento( $index )
+        public function DeleteUsuario( $index )
         {
             $stmt = $this->conn->prepare( "DELETE FROM Usuario WHERE CD_Usuario = ?" );
             $stmt->bind_param( "i", $index );

@@ -1,7 +1,9 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="iso-8859-1">
+        <!--<meta charset="iso-8859-1">-->
+        <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
@@ -10,16 +12,16 @@
         <!-- Bootstrap CSS CDN -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <!-- Our Custom CSS -->
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="assets/CSS/style.css">
         <!-- Scrollbar Custom CSS -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
 
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+    
+        <link rel="icon" href="assets/ICOs/key.ico">
     </head>
     <body>
         <?php
-            session_start();
-
             require 'Connection.php';
             require 'Chave.php';
             require 'Usuario.php';
@@ -44,7 +46,7 @@
                             $varToSend['NM_Chave'] = $nmChave;
 
                         if( sizeof( $varToSend ) > 0 )
-                            if( $Chave->UpdateChave( $idChave, $varToSend ) )
+                            if( $chave->UpdateChave( $idChave, $varToSend ) )
                                 echo "<script> alert('Atualizado com sucesso'); </script>";
                     }
                 }
@@ -73,45 +75,7 @@
             {
         ?>
         <div class="wrapper">
-            <nav id="sidebar">
-                <div class="sidebar-header">
-                    <h3><center>Sistema de Chaves</center></h3>
-                </div>
-                <ul class="list-unstyled components">
-                    <li>
-                        <a href="room-requests.php"><i class="fa fa-key fa-1x" aria-hidden="true"></i>  Requisicoes de sala</a> <!-- Tava nesse <a> -> data-toggle="collapse" aria-expanded="false" -->
-                    </li>
-                    <li>
-                        <a href="equipment-requests.php"><i class="fa fa-microchip fa-1x" aria-hidden="true"></i>  Req. de equipamento</a>
-                    </li>
-                    <li>
-                        <a href="requesters.php"><i class="fa fa-id-card-o fa-1x" aria-hidden="true"></i>  Requisitantes</a>
-                    </li>
-                    <li class="active">
-                        <a href="#"><i class="fa fa-lock fa-1x" aria-hidden="true"></i>  Labs / Salas</a>
-                    </li>
-                    <li>
-                        <a href="equipments.php"><i class="fa fa-wrench fa-1x" aria-hidden="true"></i>  Equipamentos</a>
-                    </li>
-                    <li>
-                        <a href="historic-keys.php"><i class="fa fa-book fa-1x" aria-hidden="true"></i>  Histórico de salas</a>
-                    </li>
-                    <li>
-                        <a href="historic-equipments.php"><i class="fa fa fa-laptop fa-1x" aria-hidden="true"></i>  Hist. de equipamentos</a>
-                    </li>
-                        <?php
-                            if( $usuario->getUserAccess() == "Admin" ){ 
-                        ?>
-                    <li>
-                        <a href="users.php"><i class="fa fa-user-o fa-1x" aria-hidden="true"></i> Usuários </a>
-                    </li>
-                        <?php } ?>
-                </ul>
-                <!--<ul class="list-unstyled CTAs">
-                    <li><a href="https://bootstrapious.com/tutorial/files/sidebar.zip" class="download">Download source</a></li>
-                    <li><a href="https://bootstrapious.com/p/bootstrap-sidebar" class="article">Back to article</a></li>
-                </ul>-->
-            </nav>
+            <?php include_once('assets/Prefabs/sidebar.php'); ?>
             <div id="content">
                 <nav class="navbar navbar-default">
                     <div class="container-fluid">
@@ -121,14 +85,16 @@
                                 <span>Ativar/Desativar Menu</span>
                             </button>
                         </div>
-                        <!--<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                             <ul class="nav navbar-nav navbar-right">
-                                <li><a href="#">Page</a></li>
-                                <li><a href="#">Page</a></li>
-                                <li><a href="#">Page</a></li>
-                                <li><a href="#">Page</a></li>
+                                <li>
+                                    <button type="button" data-toggle="modal" data-target="#pesquisaChave" class='btn btn-info navbar-btn'>
+                                        <i class="glyphicon glyphicon-search"></i>
+                                        <span>Pesquisar</span>
+                                    </button>
+                                </li>
                             </ul>
-                        </div>-->
+                        </div>
                     </div>
                 </nav>
                 <?php
@@ -136,7 +102,7 @@
 
                     if( is_array( $chaves ) )
                     { ?>
-                        <table class="table table-striped table-hover">
+                        <table id="keysTable" class="table table-striped table-hover">
                             <thead class="thead-dark">
                                 <tr>
                                     <th>Código</th>
@@ -146,23 +112,53 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            <?php        
-                                $table = ""; // Variável que exibirá a tabela
-                
+                            <?php
+                                $table = "";
+
                                 foreach( $chaves as $key => $value )
                                 {
                                     $table .= "<tr>";
                                     $table .= "<td>".$value['CD_Chave']."</td>";
-                                    $table .= "<td>".utf8_decode($value['NM_Chave'])."</td>";
+                                    $table .= "<td>".$value['NM_Chave']."</td>";
+                                    $table .= "<td><button type='button' onClick='EditModalChange(".$value['CD_Chave'].")' data-toggle='modal' data-target='#editModal' class='btn btn-success btn-sm'><span class='fas fa-edit 1x'></span></button></td>";
+                                    $table .= "<td><button type='button' onClick='DeleteRequester(".$value['CD_Chave'].")' class='btn btn-danger btn-sm'><span class='fas fa-trash 1x'></span></button></td>";
+                                    $table .= "</tr>";
+                                }
+
+                                echo $table;
+
+                                /*$page = null;
+
+                                if( array_key_exists( 'page', $_GET ) )
+                                    $page = is_numeric( $_GET['page'] ) ? $_GET['page'] : 1;
+                                else
+                                    $page = 1;
+     
+                                $maxResults = ( $page * 5 ) - 1;
+                                $minResults = $maxResults - 4;
+                                
+                                $table = ""; // Variável que exibirá a tabela
+
+                                $count = $minResults;
+
+                                while( $count <= $maxResults && array_key_exists( $count, $chaves ) )
+                                {
+                                    $value = $chaves[$count];
+                                    
+                                    $table .= "<tr>";
+                                    $table .= "<td>".$value['CD_Chave']."</td>";
+                                    $table .= "<td>".$value['NM_Chave']."</td>";
                                     $table .= "<td><button type='button' onClick='EditModalChange(".$value['CD_Chave'].")' data-toggle='modal' data-target='#editModal' class='btn btn-success btn-sm'><span class='fa fa-edit'></span></button></td>";
                                     $table .= "<td><button type='button' onClick='DeleteRequester(".$value['CD_Chave'].")' class='btn btn-danger btn-sm'><span class='fa fa-trash-o'></span></button></td>";
                                     $table .= "</tr>";
+
+                                    $count++;
                                 }
                 
-                                echo $table;
+                                echo $table;*/
                             ?>
                             </tbody>
-                        </table>
+                        </table><br><br><br><br>
                     <div class="modal fade" id="editModal" role="dialog" aria-labelledby="exampleModalLabel">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
@@ -190,20 +186,70 @@
                         </div>
                     </div>
                 <?php } else { // Fim do IF IsArray() ?>
-                    <div class="jumbotron">
-                        <h1 class="display-3">Sistema de chaves</h1>
-                        <p class="lead">Ainda não há nenhum requisitantes cadastrado</p>
-                        <hr class="my-4">
+                    <div class="container-fluid">
+                        <div class="jumbotron">
+                            <h1 class="display-3">Sistema de chaves</h1>
+                            <p class="lead">Ainda não há nenhuma chave cadastrada</p>
+                            <hr class="my-4">
+                        </div>
                     </div>
                 <?php } // Fim do else ?>
                 <footer>
-                    <div class="col-md-12 text-right">
-                        <button type="button" id="button-glyphicon" class="btn btn-circle btn-xl" data-toggle="modal" data-target="#novoRequisitante"><i class="glyphicon glyphicon-plus"></i></button><!-- Em class: novoRequisitante -->
+                    <!--<div class="text-center">
+                        <div class="pagination">-->
+                            <?php
+                                /*$pages = ( is_array($chaves) ? intval( sizeof( $chaves ) / 5 ) : 0 );
+
+                                $pages += 1;
+
+                                if( $pages >= 2 )
+                                {
+                                    $maxPages = null;
+                                    $minPages = null;
+
+                                    if( $page <= 3 )
+                                    {
+                                        $maxPages = 5;
+                                        $minPages = 1;
+                                    }
+                                    else
+                                    {
+                                        $maxPages = $page + 2;
+                                        $minPages = $page - 2;
+
+                                        if( $maxPages > $pages )
+                                        {
+                                            $diff = $maxPages - $pages;
+                                                
+                                            $maxPages -= $diff;
+                                            $minPages -= $diff;
+                                        }
+                                    }
+
+                                    for( $i = 1; $i <= $maxPages; $i++ )
+                                    {
+                                        if( $i <= $maxPages && $i >= $minPages )
+                                        {
+                                            $r = isset( $_GET['page'] ) ? $_GET['page'] : 1;
+
+                                            echo "<a class='".($i == $page ? "active" : "")."' href='keys.php?page=".($i > $pages ? $r : $i)."'> $i </a>";
+                                        }
+                                    }
+                                }*/
+                            ?>
+                       <!-- </div>
+                    </div>-->
+                    <div class="col-md-12">
+                        <div class="text-right">
+                            <button type="button" id="button-glyphicon" class="btn btn-circle btn-xl" data-toggle="modal" data-target="#novoRequisitante"><i class="glyphicon glyphicon-plus"></i></button>
+                        </div>
                     </div>
-                    <div class="container">
-				        <p class="copyright">&copy; 2018. Desenvolvido por <a href="https://github.com/marcelowzd">Marcelo Henrique</a></p>
-				    </div>
                 </footer>
+                <div class="footer">
+                    <div class="container">
+                        <p class="copyright">&copy; 2018. Desenvolvido por <a href="https://github.com/marcelowzd">Marcelo Henrique</a></p>
+                    </div>
+                </div>
                 <div class="modal fade" id="novoRequisitante" role="dialog">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -229,12 +275,35 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal fade" id="pesquisaChave" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Pesquisar Lab / Sala</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <form role="form" id="validator" method="POST" action="#">
+                                            <div class="form-group has-feedback">
+                                                <label for="searchInput"><strong>Pesquisa</strong></label>
+                                                <input type="text" name="TXT_Pesquisa" id="searchInput" class="form-control"  placeholder="Procurar por Lab / Sala" onkeyup="return FilterTable();" required />
+                                            </div><!-- END DIV -->
+                                        </form> <!-- END FORM -->
+                                    </div><!-- END COL-MD-12 -->
+                                </div><!-- END ROW -->
+                            </div><!-- END MODAL BODY -->
+                        </div><!-- END MODAL CONTENT -->
+                    </div><!-- END MODAL DIALOG -->
+                </div> <!-- END MODAL PESQUISA REQUISITANTE-->
             </div>
         </div>
 
 
         <!-- jQuery CDN -->
-        <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+        <!--<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>-->
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
         <!-- Bootstrap Js CDN -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <!-- jQuery Custom Scroller CDN -->
@@ -254,6 +323,29 @@
             });
         </script>
         <script>
+            function FilterTable() // Não filtra entre todos, apenas os que aparecem na página (PHP Required)
+            {
+                var sText = document.getElementById("searchInput");
+                var sTable = document.getElementById("keysTable");
+                var sFilter = sText.value.toUpperCase();
+
+                var tr = sTable.getElementsByTagName("tr");
+                var td;
+
+                for (i = 0; i < tr.length; i++) 
+                {
+                    td = tr[i].getElementsByTagName("td")[1]; // Posicao 0 = ID, Posição 1 = Nome
+
+                    if(td)
+                    {
+                        if (td.innerHTML.toUpperCase().indexOf(sFilter) > -1)
+                            tr[i].style.display = "";
+                        else
+                            tr[i].style.display = "none";
+                    }
+                }
+            }
+
             function EditModalChange( index )
             {
                 var xhttp = generateXMLHttp();
@@ -315,7 +407,8 @@
             }
         </script>
         <?php } else {
-                header("Location: login-page.php");
+                echo "<script> window.location.replace('index.php'); </script>";
+                //header("Location: login-page.php");
             } ?>
     </body>
 </html>

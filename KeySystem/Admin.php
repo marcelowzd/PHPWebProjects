@@ -1,5 +1,6 @@
-<?php
+﻿<?php
     require 'Connection.php';
+    require 'Crypt.php';
 
     $conn = Connection::Connect();
 
@@ -16,7 +17,7 @@
                     NM_Usuario VARCHAR(50) NOT NULL,
                     DS_Email_Usuario VARCHAR(50) NOT NULL,
                     DS_Login_Usuario VARCHAR(50) NOT NULL,
-                    DS_Senha_Usuario VARCHAR(50) NOT NULL,
+                    DS_Senha_Usuario VARCHAR(100) NOT NULL,
                     DS_Acesso_Usuario VARCHAR(50) NOT NULL
                 )";
 
@@ -55,12 +56,16 @@
                 (
                     CD_Requisicao_Sala INTEGER PRIMARY KEY AUTO_INCREMENT,
                     CD_Chave INTEGER NOT NULL UNIQUE,
-                    CD_Requisitante INTEGER NOT NULL UNIQUE,
+                    CD_Requisitante INTEGER NOT NULL,
                     DT_Completa DATE NOT NULL,
                     DT_Horario TIME NOT NULL,
                     FOREIGN KEY (CD_Chave) REFERENCES Chave(CD_Chave),
                     FOREIGN KEY (CD_Requisitante) REFERENCES Requisitante(CD_Requisitante)
                 )";
+
+        // CHANGELOG
+        // CD_Requisitante tinha UNIQUE, mas de acordo com a regra de negócio
+        // um professor pode pegar uma ou mais chaves ao mesmo tempo
 
         if( mysqli_query( $conn, $sql ) ) echo "<p> Tabela RequisicaoSala criada com sucesso </p>";
         else echo "<p>".mysqli_error( $conn )."</p>";
@@ -108,6 +113,46 @@
 
         if( mysqli_query( $conn, $sql ) ) echo "<p> Tabela HistoricoEquipamento criada com sucesso </p>";
         else echo "<p>".mysqli_error( $conn )."</p>";
+
+        $sql = "CREATE TABLE IF NOT EXISTS ReservaChave
+                (
+                    CD_Reserva_Chave INTEGER PRIMARY KEY AUTO_INCREMENT,
+                    CD_Requisitante INTEGER NOT NULL,
+                    CD_Chave INTEGER NOT NULL,
+                    DT_Completa DATE NOT NULL,
+                    DT_Horario_Comeco TIME NOT NULL,
+                    DT_Horario_Termino TIME NOT NULL,
+                    FOREIGN KEY (CD_Chave) REFERENCES Chave(CD_Chave),
+                    FOREIGN KEY (CD_Requisitante) REFERENCES Requisitante(CD_Requisitante)
+                )";
+
+        if( mysqli_query( $conn, $sql ) ) echo "<p> Tabela ReservaChave criada com sucesso </p>";
+        else echo "<p>".mysqli_error( $conn )."</p>";
+
+        $sql = "CREATE TABLE IF NOT EXISTS ReservaEquipamento
+                (
+                    CD_Reserva_Equipamento INTEGER PRIMARY KEY AUTO_INCREMENT,
+                    CD_Requisitante INTEGER NOT NULL,
+                    CD_Equipamento INTEGER NOT NULL,
+                    DT_Completa DATE NOT NULL,
+                    DT_Horario_Comeco TIME NOT NULL,
+                    DT_Horario_Termino TIME NOT NULL,
+                    FOREIGN KEY (CD_Equipamento) REFERENCES Equipamento(CD_Equipamento),
+                    FOREIGN KEY (CD_Requisitante) REFERENCES Requisitante(CD_Requisitante)
+                )";
+
+        if( mysqli_query( $conn, $sql ) ) echo "<p> Tabela ReservaEquipamento criada com sucesso </p>";
+        else echo "<p>".mysqli_error( $conn )."</p>";
+
+        /*$sql = "INSERT INTO Requisitante VALUES (NULL, 'Livre para os alunos', 'Livre'), (NULL, 'Livre para os alunos', 'Livre')";
+
+        if( mysqli_query( $conn, $sql ) ) echo "<p> Requisitante 'Laboratório Livre' inserido com sucesso </p>";
+        else echo "<p>".mysqli_error( $conn )."</p>";
+
+        $sql = "INSERT INTO Usuario VALUES (NULL, 'Admin', 'Admin', 'Admin', '".Crypt::Encrypt('Admin')."', 'Admin')";
+
+        if( mysqli_query( $conn, $sql ) ) echo "<p> Usuário Admin inserido com sucesso </p>";
+        else echo "<p>".mysqli_error( $conn )."</p>";*/
     }
     else echo mysqli_error( $conn );
 ?>

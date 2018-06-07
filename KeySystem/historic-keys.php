@@ -1,7 +1,77 @@
+<?php 
+    session_start(); 
+
+    require 'Connection.php';
+    require 'Usuario.php';
+    require 'HistoricoChave.php';
+    require "vendor/autoload.php";
+
+    use PhpOffice\PhpSpreadsheet\Spreadsheet;
+    use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+    use PhpOffice\PhpSpreadsheet\IOFactory;
+    
+    $usuario = new Usuario();
+    $historicoChave = new HistoricoChave();
+
+    if( array_key_exists( 'report', $_GET ) )
+    {
+        $spreadsheet = new Spreadsheet();
+
+        $spreadsheet->getProperties()->setCreator($_SESSION['NM_Usuario'])
+                                    ->setLastModifiedBy($_SESSION['NM_Usuario'])
+                                    ->setTitle('Relatório de chaves')
+                                    ->setSubject('Histórico de chaves')
+                                    ->setDescription('Documento contendo o histórico até certa data')
+                                    ->setKeywords('chaves xlsx histórico')
+                                    ->setCategory('Histórico');
+        
+        $spreadsheet->setActiveSheetIndex(0)
+                    ->setCellValue('A1', 'Chave')
+                    ->setCellValue('B1', 'Requisitante')
+                    ->setCellValue('C1', 'Usuário')
+                    ->setCellValue('D1', 'Data recebida')
+                    ->setCellValue('E1', 'Horário recebido')
+                    ->setCellValue('F1', 'Data entregue')
+                    ->setCellValue('G1', 'Horário entregue');
+
+        $historicoChaves = $historicoChave->ReadHistoricoChave( );
+
+        if( is_array( $historicoChaves ) )
+        {
+            foreach( $historicoChaves as $key => $value )
+            {
+                $date = new DateTime($value['DT_Completa_Recebida']);
+                $dateb = new DateTime($value['DT_Completa_Entrega']);
+                
+                $sum = strval(intval($key + 2));
+
+                $spreadsheet->setActiveSheetIndex(0)
+                    ->setCellValue("A".$sum, $value['NM_Chave'])
+                    ->setCellValue('B'.$sum, $value['NM_Requisitante'])
+                    ->setCellValue('C'.$sum, $value['NM_Usuario'])
+                    ->setCellValue('D'.$sum, $date->format('d/m/Y'))
+                    ->setCellValue('E'.$sum, $value['DT_Horario_Recebido'])
+                    ->setCellValue('F'.$sum, $dateb->format('d/m/Y'))
+                    ->setCellValue('G'.$sum, $value['DT_Horario_Entrega']);
+            }
+        }
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="HistoricoChave_'.date('d').'_'.date('m').'_'.date('Y').'.xlsx"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1');
+
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+
+        exit();
+    }
+?>
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="iso-8859-1">
+        <!--<meta charset="iso-8859-1">-->
+        <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
@@ -10,113 +80,21 @@
         <!-- Bootstrap CSS CDN -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <!-- Our Custom CSS -->
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="assets/CSS/style.css">
         <!-- Scrollbar Custom CSS -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
 
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+    
+        <link rel="icon" href="assets/ICOs/key.ico">
     </head>
     <body>
-        <?php
-            session_start();
-
-            require 'Connection.php';
-            require 'Usuario.php';
-            require 'HistoricoChave.php';
-    
-            $usuario = new Usuario();
-            $historicoChave = new HistoricoChave();
-
-            /*if( array_key_exists( "Save", $_POST ) )
-            {
-                $idRequisitante = $_POST['CD_Requisitante_Add'];
-                $idEquipamento = $_POST['CD_Equipamento_Add'];
-
-                if( is_numeric( $idRequisitante ) && intval( $idRequisitante ) > 0 )
-                    if( is_numeric( $idEquipamento ) && intval( $idEquipamento ) > 0 )
-                        if( $requisicaoEquipamento->CreateRequisicaoEquipamento( $idEquipamento, $idRequisitante, date("Y-m-d"), date("H:i:s") ) )
-                            echo "
-                                <script> 
-                                    alert('Cadastrado com sucesso'); 
-                                    window.top.location.href = window.top.location.protocol +'//'+ window.top.location.host + window.top.location.pathname + window.top.location.search;
-                                </script>
-                                ";
-                        else
-                            echo "<script> alert('Chaves duplicadas'); </script>";
-                    else
-                        echo "<script> alert('Número inválido para equipamento'); </script>";
-                else
-                    echo "<script> alert('Número inválido para requisitante'); </script>";
-            }
-            else if( array_key_exists( "Edit", $_POST ) )
-            {
-                $idRequisicaoEquipamento = $_POST['CD_Requisicao_Equipamento'];
-                $idRequisitante = $_POST['CD_Requisitante'];
-                $idEquipamento = $_POST['CD_Equipamento'];
-
-                if( is_numeric( $idRequisicaoEquipamento ) && intval( $idRequisicaoEquipamento ) > 0 )
-                {
-                    if( is_numeric( $idRequisitante ) && intval( $idRequisitante ) > 0 )
-                    {
-                        if( is_numeric( $idEquipamento ) && intval( $idEquipamento ) > 0 )
-                        {
-                            $varToSend = array( );
-
-                            $originValues = $requisicaoEquipamento->ReadRequisicaoEquipamento( $idRequisicaoEquipamento, null, null );
-
-                            if( $originValues[ 0 ][ 'CD_Requisitante' ] != $idRequisitante )
-                                $varToSend[ 'CD_Requisitante' ] = $idRequisitante;
-
-                            if( $originValues[ 0 ][ 'CD_Equipamento' ] != $idEquipamento )
-                                $varToSend[ 'CD_Equipamento' ] = $idEquipamento;
-
-                            if( sizeof( $varToSend ) > 0 )
-                                if( $requisicaoEquipamento->UpdateRequisicaoEquipamento( $idRequisicaoEquipamento, $varToSend ) )
-                                    echo "<script> alert('Atualizado com sucesso'); </script>";
-                        }
-                    }
-                }
-            }*/
-            
+        <?php            
             if( $usuario->getUserAccess() != "Offline" )
             {
         ?>
         <div class="wrapper">
-        <nav id="sidebar">
-                <div class="sidebar-header">
-                    <h3><center>Sistema de Chaves</center></h3>
-                </div>
-                <ul class="list-unstyled components">
-                    <li>
-                        <a href="room-requests.php"><i class="fa fa-key fa-1x" aria-hidden="true"></i>  Requisicoes de sala</a>
-                    </li>
-                    <li>
-                        <a href="equipment-requests.php"><i class="fa fa-microchip fa-1x" aria-hidden="true"></i>  Req. de equipamento</a>
-                    </li>
-                    <li>
-                        <a href="requesters.php"><i class="fa fa-id-card-o fa-1x" aria-hidden="true"></i>  Requisitantes</a>
-                    </li>
-                    <li>
-                        <a href="keys.php"><i class="fa fa-lock fa-1x" aria-hidden="true"></i>  Labs / Salas</a>
-                    </li>
-                    <li>
-                        <a href="equipments.php"><i class="fa fa-wrench fa-1x" aria-hidden="true"></i>  Equipamentos</a>
-                    </li>
-                    <li class="active">
-                        <a href="historic-keys.php"><i class="fa fa-book fa-1x" aria-hidden="true"></i>  Histórico de salas</a>
-                    </li>
-                    <li>
-                        <a href="historic-equipments.php"><i class="fa fa fa-laptop fa-1x" aria-hidden="true"></i>  Hist. de equipamentos</a>
-                    </li>
-                        <?php
-                            if( $usuario->getUserAccess() == "Admin" ){ 
-                        ?>
-                    <li>
-                        <a href="users.php"><i class="fa fa-user-o fa-1x" aria-hidden="true"></i> Usuários </a>
-                    </li>
-                        <?php } ?>
-                </ul>
-            </nav>
+            <?php include_once('assets/Prefabs/sidebar.php'); ?>
             <div id="content">
                 <nav class="navbar navbar-default">
                     <div class="container-fluid">
@@ -124,6 +102,10 @@
                             <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
                                 <i class="glyphicon glyphicon-align-left"></i>
                                 <span>Ativar/Desativar Menu</span>
+                            </button>
+                            <button type="submit" id="sidebarCollapse" onClick='return location.href = "historic-keys.php?report=#";' class="btn btn-info navbar-btn" name="report">
+                                <i class="fas fa-chart-bar 1x" aria-hidden="true"></i>
+                                <span>Criar relatório</span>
                             </button>
                         </div>
                     </div>
@@ -146,49 +128,110 @@
                             </tr>
                         </thead>
                         <tbody>
-                        <?php        
+                        <?php
+                            $page = null;
+
+                            if( array_key_exists( 'page', $_GET ) )
+                                $page = is_numeric( $_GET['page'] ) ? $_GET['page'] : 1;
+                            else
+                                $page = 1;
+
+                            $maxResults = ( $page * 7 ) - 1;
+                            $minResults = $maxResults - 6;
+
                             $table = ""; // Variável que exibirá a tabela
-            
-                            foreach( $historicoChaves as $key => $value )
+
+                            $count = $minResults;
+
+                            while( $count <= $maxResults && array_key_exists( $count, $historicoChaves ) )
                             {
+                                $value = $historicoChaves[$count];
+
                                 $date = new DateTime($value['DT_Completa_Recebida']);
                                 $dateb = new DateTime($value['DT_Completa_Entrega']);
 
                                 $table .= "<tr>";
-                                $table .= "<td>".utf8_decode($value['NM_Chave'])."</td>";
-                                $table .= "<td>".utf8_decode($value['NM_Requisitante'])."</td>";
-                                $table .= "<td>".utf8_decode($value['NM_Usuario'])."</td>";
+                                $table .= "<td>".$value['NM_Chave']."</td>";
+                                $table .= "<td>".$value['NM_Requisitante']."</td>";
+                                $table .= "<td>".$value['NM_Usuario']."</td>";
                                 $table .= "<td>".$date->format('d/m/Y')."</td>";
                                 $table .= "<td>".$value['DT_Horario_Recebido']."</td>";
                                 $table .= "<td>".$dateb->format('d/m/Y')."</td>";
                                 $table .= "<td>".$value['DT_Horario_Entrega']."</td>";
-                                //$table .= "<td><button type='button' onClick='EditModalChange(".$value['CD_Requisicao_Equipamento'].")' data-toggle='modal' data-target='#editModal' class='btn btn-success btn-sm'><span class='fa fa-edit'></span></button></td>";
-                                //$table .= "<td><button type='button' onClick='DeleteEquipmentRequest(".$value['CD_Requisicao_Equipamento'].")' class='btn btn-danger btn-sm'><span class='fa fa-repeat'></span></button></td>";
                                 $table .= "</tr>";
+
+                                $count++;
                             }
-            
+
                             echo $table;
                         ?>
                         </tbody>
                     </table>
                 <?php   } else { // Fim do IF IsArray() ?>
-                    <div class="jumbotron">
-                        <h1 class="display-3">Sistema de chaves</h1>
-                        <p class="lead">Nada foi inserido no histórico até o momento</p>
-                        <hr class="my-4">
+                    <div class="container-fluid">
+                        <div class="jumbotron">
+                            <h1 class="display-3">Sistema de chaves</h1>
+                            <p class="lead">Ainda nada foi salvo no histórico</p>
+                            <hr class="my-4">
+                        </div>
                     </div>
                 <?php } // Fim do else ?>
                 <footer>
-                    <div class="container">
-						<p class="copyright">&copy; 2018. Desenvolvido por <a href="https://github.com/marcelowzd">Marcelo Henrique</a></p>
-					</div>
+                    <div class="text-center">
+                        <div class="pagination">
+                            <?php 
+                                $res = ( is_array( $historicoChaves ) ? sizeof( $historicoChaves ) / 7 : 0 );                         
+                                    
+                                $pages = intval( ( is_int($res) ? $res : $res + 1 ) );
+                                
+                                if( $pages >= 2 )
+                                {
+                                    $maxPages = null;
+                                    $minPages = null;
+
+                                    if( $page <= 3 ) // Corrigir lógica nesse IF, tem mais coisa pra por aqui
+                                    {
+                                        $maxPages = 5;
+                                        $minPages = 1;
+                                    }
+                                    else // Esse aqui ta bom, mas dá pra fazer melhor
+                                    {
+                                        $maxPages = $page + 2;
+                                        $minPages = $page - 2;
+
+                                        if( $maxPages > $pages)
+                                        {
+                                            $diff = $maxPages - $pages;
+                                                
+                                            $maxPages -= $diff;
+                                            $minPages -= $diff;
+                                        }
+                                    }
+
+                                    for( $i = 1; $i <= $maxPages; $i++ )
+                                    {
+                                        if( $i <= $maxPages && $i >= $minPages )
+                                        {
+                                            $r = isset( $_GET['page'] ) ? $_GET['page'] : 1;
+
+                                            echo "<a class='".($i == $page ? "active" : "")."' href='historic-keys.php?page=".($i > $pages ? $r : $i)."'> $i </a>";
+                                        }
+                                    }
+                                }
+                            ?>
+                        </div>
+                        <div class="container">
+    						<p class="copyright">&copy; 2018. Desenvolvido por <a href="https://github.com/marcelowzd">Marcelo Henrique</a></p>
+    					</div>
+                    </div>
                 </footer>
             </div>
         </div>
 
 
         <!-- jQuery CDN -->
-        <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+        <!--<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>-->
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
         <!-- Bootstrap Js CDN -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <!-- jQuery Custom Scroller CDN -->
@@ -233,7 +276,8 @@
             }
         </script>
             <?php } else {
-                header("Location: login-page.php");
+                echo "<script> window.location.replace('index.php'); </script>";
+                //header("Location: login-page.php");
             } ?>
     </body>
 </html>

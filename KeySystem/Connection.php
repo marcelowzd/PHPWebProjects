@@ -3,7 +3,7 @@
     {
         private static $host = "localhost";
         private static $user = "root";
-        private static $pswd = ""; // Or root
+        private static $pswd = "root"; // Or root
         private static $dtbs = "DtbsChave";
 
         public static function Connect()

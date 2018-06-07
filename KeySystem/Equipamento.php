@@ -27,20 +27,20 @@
 
             if( $index )
             {
-                $stmt = $this->conn->prepare( "SELECT * FROM Equipamento WHERE CD_Equipamento = ?" );
+                $stmt = $this->conn->prepare( "SELECT * FROM Equipamento WHERE CD_Equipamento = ? ORDER BY NM_Equipamento" );
                 $stmt->bind_param( "i", $index );
             }
             else if( $nome )
             {
                 $nome = "%".$nome."%";
 
-                $stmt = $this->conn->prepare( "SELECT * FROM Equipamento WHERE NM_Equipamento LIKE ?" );
+                $stmt = $this->conn->prepare( "SELECT * FROM Equipamento WHERE NM_Equipamento LIKE ? ORDER BY NM_Equipamento" );
                 $stmt->bind_param( "s", $nome );
             }
             else if( $filterByInUse )
-                $stmt = $this->conn->prepare( "SELECT * FROM Equipamento WHERE CD_Equipamento NOT IN ( SELECT CD_Equipamento FROM RequisicaoEquipamento )");
+                $stmt = $this->conn->prepare( "SELECT * FROM Equipamento WHERE CD_Equipamento NOT IN ( SELECT CD_Equipamento FROM RequisicaoEquipamento ) ORDER BY NM_Equipamento");
             else
-                $stmt = $this->conn->prepare( "SELECT * FROM Equipamento" );
+                $stmt = $this->conn->prepare( "SELECT * FROM Equipamento ORDER BY NM_Equipamento" );
             
             $stmt->execute();
             $stmt->store_result();

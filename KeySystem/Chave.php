@@ -11,7 +11,7 @@
 
         public function CreateChave( $name )
         {
-            $stmt = $this->conn->prepare( "INSERT INTO Chave VALUES (null, ? )" );
+            $stmt = $this->conn->prepare( "INSERT INTO Chave VALUES ( null, ? )" );
             $stmt->bind_param( "s", $name );
             
             $return = ( $stmt->execute() == false ? false : true );
@@ -27,20 +27,20 @@
 
             if( $index )
             {
-                $stmt = $this->conn->prepare( "SELECT * FROM Chave WHERE CD_Chave = ?" );
+                $stmt = $this->conn->prepare( "SELECT * FROM Chave WHERE CD_Chave = ? ORDER BY NM_Chave" );
                 $stmt->bind_param( "i", $index );
             }
             else if( $nome )
             {
                 $nome = "%".$nome."%";
 
-                $stmt = $this->conn->prepare( "SELECT * FROM Chave WHERE NM_Chave LIKE ?" );
+                $stmt = $this->conn->prepare( "SELECT * FROM Chave WHERE NM_Chave LIKE ? ORDER BY NM_Chave" );
                 $stmt->bind_param( "s", $nome );
             }
-            else if($filterByInUse)
-                $stmt = $this->conn->prepare( "SELECT * FROM Chave WHERE CD_Chave NOT IN (SELECT CD_Chave FROM RequisicaoSala)" );
+            else if( $filterByInUse )
+                $stmt = $this->conn->prepare( "SELECT * FROM Chave WHERE CD_Chave NOT IN (SELECT CD_Chave FROM RequisicaoSala) ORDER BY NM_Chave" );
             else
-                $stmt = $this->conn->prepare( "SELECT * FROM Chave" );
+                $stmt = $this->conn->prepare( "SELECT * FROM Chave ORDER BY NM_Chave" );
             
             $stmt->execute();
             $stmt->store_result();

@@ -21,7 +21,7 @@
             return $return;
         }
 
-        public function ReadRequisicaoSala( $id = null, $idRequester = null, $idKey = null)
+        public function ReadRequisicaoSala( $id = null, $idRequester = null, $idKey = null, $filterToTv = null )
         {
             $sql = "SELECT RS.CD_Requisicao_Sala, C.NM_Chave, R.CD_Requisitante, 
             R.NM_Requisitante, RS.DT_Completa, RS.DT_Horario, C.CD_Chave
@@ -35,8 +35,12 @@
                 $sql .= "WHERE CD_Requisitante = $idRequester";
             else if( $idKey )
                 $sql .= "WHERE CD_Chave = $idKey";
+            else if( $filterToTv )
+                $sql .= "WHERE R.DS_Requisitante LIKE '%Professor%' OR R.DS_Requisitante LIKE '%Livre%'"; // Mostra apenas professores e labs livres
             else
                 $sql .= "WHERE CD_Requisicao_Sala > 0";
+            
+            $sql .= " ORDER BY R.NM_Requisitante";
 
             $stmt = $this->conn->prepare($sql);
             
@@ -46,7 +50,7 @@
                             (
                                 $idRequisicaoSala, $nmchave, 
                                 $idrequisitante, $nmrequisitante, 
-                                $dtcompleta, $dthorario, $idchave 
+                                $dtcompleta, $dthorario, $idchave
                             );
             
             $return = null;
